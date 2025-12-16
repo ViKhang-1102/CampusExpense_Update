@@ -67,6 +67,7 @@ public class ExpenseFragment extends Fragment {
     private int currentMonth;
     private int currentYear;
     private int selectedCategoryId = -1;
+    private String selectedCategoryName;
     private int currentTab = 0;
 
     @Nullable
@@ -80,6 +81,10 @@ public class ExpenseFragment extends Fragment {
         View btnSelectMonth = view.findViewById(R.id.btnSelectMonth);
         if (btnSelectMonth != null) {
             btnSelectMonth.setOnClickListener(v -> showMonthYearPickerDialog());
+        }
+        View btnFilterCategory = view.findViewById(R.id.btnFilterCategory);
+        if (btnFilterCategory != null) {
+            btnFilterCategory.setOnClickListener(v -> showCategoryFilterDialog());
         }
         totalExpenseText = view.findViewById(R.id.totalExpenseText);
         expenseCountText = view.findViewById(R.id.expenseCountText);
@@ -100,6 +105,7 @@ public class ExpenseFragment extends Fragment {
         Calendar calendar = Calendar.getInstance();
         currentMonth = calendar.get(Calendar.MONTH);
         currentYear = calendar.get(Calendar.YEAR);
+        selectedCategoryName = getString(R.string.all_categories);
 
         setupTabs();
         setupRecyclerView();
@@ -150,20 +156,85 @@ public class ExpenseFragment extends Fragment {
         monthPicker.setMinValue(0);
         monthPicker.setMaxValue(11);
         monthPicker.setDisplayedValues(months);
-        monthPicker.setValue(currentMonth);
+        monthPicker.setValue(cal.get(Calendar.MONTH));
         yearPicker.setMinValue(year - 5);
         yearPicker.setMaxValue(year + 1);
-        yearPicker.setValue(currentYear);
+        yearPicker.setValue(year);
         builder.setView(pickerView);
         builder.setPositiveButton(getString(R.string.apply_label), (d, which) -> {
             int selMonth = monthPicker.getValue();
             int selYear = yearPicker.getValue();
             currentMonth = selMonth;
             currentYear = selYear;
+            View btnSelectMonth = getView() != null ? getView().findViewById(R.id.btnSelectMonth) : null;
+            if (btnSelectMonth instanceof android.widget.Button) {
+                java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("MMMM yyyy", java.util.Locale.getDefault());
+                java.util.Calendar tmp = java.util.Calendar.getInstance();
+                tmp.set(selYear, selMonth, 1);
+                ((android.widget.Button) btnSelectMonth).setText(sdf.format(tmp.getTime()));
+            }
             refreshData();
         });
         builder.setNegativeButton(getString(R.string.cancel_label), null);
         builder.show();
+    }
+
+    private void showCategoryFilterDialog() {
+        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(requireContext());
+        View dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_choose_category, null);
+        RecyclerView rv = dialogView.findViewById(R.id.recyclerViewCategories);
+        Button btnCancel = dialogView.findViewById(R.id.btnCancel);
+
+        List<Category> cats = new ArrayList<>();
+        Category allCat = new Category();
+        allCat.setId(-1);
+        allCat.setName(getString(R.string.all_categories));
+        cats.add(allCat);
+        cats.addAll(categoryDao.getAllByUser(currentUserId));
+
+        AlertDialog dialog = builder.create(); // Create first to reference in listener if needed (though we use dialog variable which needs to be final or effectively final)
+        // Actually, we can't reference 'dialog' inside the lambda before it's initialized if we declare it there.
+        // Workaround: Use an array or object wrapper, or just build it after defining listener.
+        // Or simple:
+        
+        com.khanghv.campusexpense.ui.adapters.CategorySelectionAdapter adapter = new com.khanghv.campusexpense.ui.adapters.CategorySelectionAdapter(cats, category -> {
+            selectedCategoryId = category.getId();
+            selectedCategoryName = category.getName();
+            View btnFilterCategory = getView() != null ? getView().findViewById(R.id.btnFilterCategory) : null;
+            if (btnFilterCategory instanceof android.widget.Button) {
+                ((android.widget.Button) btnFilterCategory).setText(selectedCategoryName);
+            }
+            refreshData();
+            // We need to dismiss dialog.
+            // Since we can't reference 'dialog' yet, we can't call dialog.dismiss() directly here unless we do the trick.
+        });
+        
+        // Trick:
+        final AlertDialog[] dialogPtr = new AlertDialog[1];
+        
+        adapter = new com.khanghv.campusexpense.ui.adapters.CategorySelectionAdapter(cats, category -> {
+            selectedCategoryId = category.getId();
+            selectedCategoryName = category.getName();
+            View btnFilterCategory = getView() != null ? getView().findViewById(R.id.btnFilterCategory) : null;
+            if (btnFilterCategory instanceof android.widget.Button) {
+                ((android.widget.Button) btnFilterCategory).setText(selectedCategoryName);
+            }
+            refreshData();
+            if (dialogPtr[0] != null) dialogPtr[0].dismiss();
+        });
+        
+        adapter.setSelectedCategoryId(selectedCategoryId);
+        rv.setLayoutManager(new LinearLayoutManager(requireContext()));
+        rv.setAdapter(adapter);
+
+        builder.setView(dialogView);
+        dialogPtr[0] = builder.create();
+        
+        btnCancel.setOnClickListener(v -> dialogPtr[0].dismiss());
+        if (dialogPtr[0].getWindow() != null) {
+            dialogPtr[0].getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        }
+        dialogPtr[0].show();
     }
 
     private void setupRecyclerView() {

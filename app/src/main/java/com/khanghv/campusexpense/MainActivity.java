@@ -17,6 +17,10 @@ import com.khanghv.campusexpense.ui.fragments.HomeFragment;
 import com.khanghv.campusexpense.ui.fragments.TransactionFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import  com.khanghv.campusexpense.ui.fragments.ExpenseFragment;
+import com.khanghv.campusexpense.ui.fragments.PaymentFragment;
+import me.leolin.shortcutbadger.ShortcutBadger;
+import com.google.android.material.badge.BadgeDrawable;
+import com.khanghv.campusexpense.data.database.AppDatabase;
 
 public class MainActivity extends BaseActivity {
 
@@ -57,6 +61,8 @@ public class MainActivity extends BaseActivity {
                 selectedFragment = new BudgetFragment();
             } else if (itemId == R.id.nav_account) {
                 selectedFragment = new AccountFragment();
+            } else if (itemId == R.id.nav_add) {
+                selectedFragment = new PaymentFragment();
             }
             if (selectedFragment != null) {
                 getSupportFragmentManager().beginTransaction()
@@ -68,6 +74,7 @@ public class MainActivity extends BaseActivity {
 
         // Luôn đặt tab Home làm mặc định sau khi Activity khởi tạo / recreate
         bottomNavigation.setSelectedItemId(R.id.nav_home);
+        updatePaymentBadge();
     }
 
     @Override
@@ -80,6 +87,7 @@ public class MainActivity extends BaseActivity {
             bottomNavigation.setSelectedItemId(R.id.nav_home);
             settingsPrefs.edit().putBoolean(KEY_RESET_HOME_AFTER_RECREATE, false).apply();
         }
+        updatePaymentBadge();
     }
 
     public void navigateToCategoriesFragment() {
@@ -88,6 +96,31 @@ public class MainActivity extends BaseActivity {
                 .replace(R.id.fragment_container, categoryFragment)
                 .addToBackStack(null)
                 .commit();
+    }
+
+    public void updatePaymentBadge() {
+        int userId = getSharedPreferences("user_prefs", MODE_PRIVATE).getInt("userId", -1);
+        if (userId == -1) return;
+        
+        // Use a background thread for DB access to avoid ANR, although allowMainThreadQueries is on.
+        new Thread(() -> {
+            int pending = AppDatabase.getInstance(this).paymentDao().getPendingCount(userId);
+            runOnUiThread(() -> {
+                if (bottomNavigation != null) {
+                    BadgeDrawable badgeAdd = bottomNavigation.getOrCreateBadge(R.id.nav_add);
+                    badgeAdd.setVisible(pending > 0);
+                    badgeAdd.setNumber(pending);
+                    bottomNavigation.removeBadge(R.id.nav_account);
+                    bottomNavigation.removeBadge(R.id.nav_expense);
+                }
+                // Update app icon badge
+                try {
+                    ShortcutBadger.applyCount(this, pending);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
+        }).start();
     }
 
 }

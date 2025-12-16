@@ -53,4 +53,12 @@
         <item name="cardElevation">2dp</item>
         <item name="strokeWidth">0dp</item>
     </style>
+
+    <style name="BottomNavigationView.Active" parent="@style/TextAppearance.MaterialComponents.Caption">
+        <item name="android:textSize">10sp</item>
+    </style>
+
+    <style name="BottomNavigationView.Inactive" parent="@style/TextAppearance.MaterialComponents.Caption">
+        <item name="android:textSize">10sp</item>
+    </style>
 </resources>

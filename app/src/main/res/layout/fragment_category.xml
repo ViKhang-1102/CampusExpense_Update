@@ -20,17 +20,18 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/manage_categories"
-                android:textSize="32sp"
+                android:textSize="31sp"
                 android:textStyle="bold"
                 android:textColor="@color/text_primary"
                 android:layout_marginBottom="8dp"
                 android:letterSpacing="0.01" />
 
             <TextView
+                android:id="@+id/tvSubtitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/manage_subtitle"
-                android:textSize="16sp"
+                android:textSize="15sp"
                 android:textColor="@color/text_secondary"
                 android:layout_marginBottom="24dp" />
 

@@ -29,19 +29,20 @@
 
     <string name="login_success">Login successful!</string>
     <string name="register_success">Registration successful!</string>
-    <string name="registering">Registering...</string>
+    <string name="registering">Registering…</string>
 
     <string name="welcome">Welcome</string>
     <string name="logged_in_message">You are successfully logged in</string>
     <string name="register_failed">Failed to register this account.</string>
-    <string name="logging_in">Logging in...</string>
+    <string name="logging_in">Logging in…</string>
 
     <!--BottomNav-->
     <string name="nav_transaction">Transaction</string>
     <string name="nav_home">Home</string>
     <string name="nav_add">Add</string>
-    <string name="nav_budget">Bubget</string>
+    <string name="nav_budget">Budget</string>
     <string name="nav_account">Account</string>
+    <string name="nav_payment">Payments</string>
     <string name="manage_categories">MANAGE CATEGORIES</string>
     <string name="edit">Edit</string>
     <string name="delete">Delete</string>
@@ -138,10 +139,26 @@
     <string name="select_month_year">Select Month and Year</string>
     <string name="apply_label">Apply</string>
     <string name="cancel_label">Cancel</string>
+    <string name="close_label">Close</string>
     <string name="period_monthly">Monthly</string>
     <string name="period_weekly">Weekly</string>
     <string name="filter_transactions_title">Filter Transactions</string>
     <string name="filter_button">Filter</string>
+    <string name="payments_title">Payments &amp; Reminders</string>
+    <string name="no_payments">No payments to show</string>
+    <string name="pay">Pay</string>
+    <string name="name">Name</string>
+    <string name="note">Note</string>
+    <string name="select_time">Select Time</string>
+    <string name="payment_due_notification_title">Payment due</string>
+    <string name="payment_due_notification_text">%1$s is due (%2$s)</string>
+    <string name="payment_channel_name">Payment Reminders</string>
+    <string name="payment_channel_desc">Notifications for upcoming payments</string>
+    <string name="total">Total</string>
+    <string name="count">Count</string>
+    <string name="unknown_category">Unknown Category</string>
+    <string name="select_category">Select Category</string>
+    <string name="fill_all_fields">Please fill all fields</string>
     <string-array name="months_names">
         <item>January</item>
         <item>February</item>
@@ -170,4 +187,5 @@
         <item>11</item>
         <item>12</item>
     </string-array>
+    <string name="zero_text">0</string>
 </resources>

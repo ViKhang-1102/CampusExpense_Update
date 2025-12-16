@@ -51,6 +51,8 @@ public class BudgetFragment extends Fragment {
     private int currentMonth;
     private int currentYear;
     private com.khanghv.campusexpense.data.ExpenseRepository repository;
+    private int selectedCategoryId = -1;
+    private String selectedCategoryName;
 
 
     @Override
@@ -81,11 +83,16 @@ public class BudgetFragment extends Fragment {
         if (btnSelectMonth != null) {
             btnSelectMonth.setOnClickListener(v -> showMonthYearPickerDialog());
         }
+        View btnFilterCategory = view.findViewById(R.id.btnFilterCategory);
+        if (btnFilterCategory != null) {
+            btnFilterCategory.setOnClickListener(v -> showCategoryFilterDialog());
+        }
         CurrencyManager.refreshRateIfNeeded(requireContext(), false, null);
         repository = new com.khanghv.campusexpense.data.ExpenseRepository((android.app.Application) requireContext().getApplicationContext());
         java.util.Calendar cal = java.util.Calendar.getInstance();
         currentMonth = cal.get(java.util.Calendar.MONTH) + 1; // 1-12
         currentYear = cal.get(java.util.Calendar.YEAR);
+        selectedCategoryName = getString(R.string.all_categories);
         refreshBudgetList();
         return view;
     }
@@ -118,6 +125,15 @@ public class BudgetFragment extends Fragment {
     }
 
     private void refreshBudgetList() {
+        // Cập nhật text cho nút Select Month
+        View btnSelectMonth = getView() != null ? getView().findViewById(R.id.btnSelectMonth) : null;
+        if (btnSelectMonth instanceof android.widget.Button) {
+            java.util.Calendar cal = java.util.Calendar.getInstance();
+            cal.set(currentYear, currentMonth - 1, 1);
+            java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("MMMM yyyy", java.util.Locale.getDefault());
+            ((android.widget.Button) btnSelectMonth).setText(sdf.format(cal.getTime()));
+        }
+
         budgetList.clear();
         categoryNames.clear();
         java.util.List<com.khanghv.campusexpense.data.model.MonthlyBudget> mbs = monthlyBudgetDao.getBudgetsByUserAndMonth(currentUserId, currentMonth, currentYear);
@@ -141,6 +157,45 @@ public class BudgetFragment extends Fragment {
             emptyView.setVisibility(View.GONE);
             recyclerView.setVisibility(View.VISIBLE);
         }
+    }
+
+    private void showCategoryFilterDialog() {
+        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(requireContext());
+        View dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_choose_category, null);
+        RecyclerView rv = dialogView.findViewById(R.id.recyclerViewCategories);
+        Button btnCancel = dialogView.findViewById(R.id.btnCancel);
+
+        List<Category> cats = new ArrayList<>();
+        Category allCat = new Category();
+        allCat.setId(-1);
+        allCat.setName(getString(R.string.all_categories));
+        cats.add(allCat);
+        cats.addAll(categoryDao.getAllByUser(currentUserId));
+
+        final android.app.AlertDialog[] dialogPtr = new android.app.AlertDialog[1];
+        com.khanghv.campusexpense.ui.adapters.CategorySelectionAdapter adapter = new com.khanghv.campusexpense.ui.adapters.CategorySelectionAdapter(cats, category -> {
+            selectedCategoryId = category.getId();
+            selectedCategoryName = category.getName();
+            View btnFilterCategory = getView() != null ? getView().findViewById(R.id.btnFilterCategory) : null;
+            if (btnFilterCategory instanceof android.widget.Button) {
+                ((android.widget.Button) btnFilterCategory).setText(selectedCategoryName);
+            }
+            refreshBudgetList();
+            if (dialogPtr[0] != null) dialogPtr[0].dismiss();
+        });
+        
+        adapter.setSelectedCategoryId(selectedCategoryId);
+        rv.setLayoutManager(new LinearLayoutManager(requireContext()));
+        rv.setAdapter(adapter);
+
+        builder.setView(dialogView);
+        dialogPtr[0] = builder.create();
+        
+        btnCancel.setOnClickListener(v -> dialogPtr[0].dismiss());
+        if (dialogPtr[0].getWindow() != null) {
+            dialogPtr[0].getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        }
+        dialogPtr[0].show();
     }
 
     private void showDeleteDialog(Budget budget) {

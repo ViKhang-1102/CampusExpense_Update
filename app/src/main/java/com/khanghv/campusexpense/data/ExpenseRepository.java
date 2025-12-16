@@ -53,9 +53,21 @@ public class ExpenseRepository {
         return expenseDao.getTotalSpentForMonth(dateRange[0], dateRange[1], userId);
     }
 
+    public LiveData<Double> getTotalSpentForMonth(String monthYear, int userId, int categoryId) {
+        if (categoryId == -1) return getTotalSpentForMonth(monthYear, userId);
+        long[] dateRange = getMonthDateRange(monthYear);
+        return expenseDao.getTotalSpentForMonthByCategory(dateRange[0], dateRange[1], userId, categoryId);
+    }
+
     public LiveData<Integer> getTransactionCountForMonth(String monthYear, int userId) {
         long[] dateRange = getMonthDateRange(monthYear);
         return expenseDao.getTransactionCountForMonth(dateRange[0], dateRange[1], userId);
+    }
+
+    public LiveData<Integer> getTransactionCountForMonth(String monthYear, int userId, int categoryId) {
+        if (categoryId == -1) return getTransactionCountForMonth(monthYear, userId);
+        long[] dateRange = getMonthDateRange(monthYear);
+        return expenseDao.getTransactionCountForMonthByCategory(dateRange[0], dateRange[1], userId, categoryId);
     }
 
     private long[] getMonthDateRange(String monthYear) {
@@ -186,6 +198,10 @@ public class ExpenseRepository {
     }
 
     public LiveData<Double> getTotalBudgetForMonth(String monthYear, int userId) {
+        return getTotalBudgetForMonth(monthYear, userId, -1);
+    }
+
+    public LiveData<Double> getTotalBudgetForMonth(String monthYear, int userId, int categoryId) {
         MutableLiveData<Double> result = new MutableLiveData<>();
         if (monthlyBudgetDao == null) {
             result.setValue(0.0);
@@ -196,10 +212,14 @@ public class ExpenseRepository {
         int month = Integer.parseInt(parts[1]);
         LiveData<java.util.List<com.khanghv.campusexpense.data.model.MonthlyBudget>> live = monthlyBudgetDao.getBudgetsByUserAndMonthLiveData(userId, month, year);
         return Transformations.map(live, mbs -> {
-            if (mbs == null || mbs.isEmpty()) return 0.0;
-            double s = 0.0;
-            for (com.khanghv.campusexpense.data.model.MonthlyBudget mb : mbs) s += mb.getTotalBudget();
-            return s;
+            if (mbs == null) return 0.0;
+            double sum = 0;
+            for (com.khanghv.campusexpense.data.model.MonthlyBudget mb : mbs) {
+                if (categoryId == -1 || mb.getCategoryId() == categoryId) {
+                    sum += mb.getTotalBudget();
+                }
+            }
+            return sum;
         });
     }
 

@@ -22,7 +22,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/expense_management"
-                android:textSize="32sp"
+                android:textSize="30sp"
                 android:textStyle="bold"
                 android:textColor="@color/text_primary"
                 android:layout_marginBottom="12dp"
@@ -51,16 +51,34 @@
 <!--                    android:layout_weight="7" />-->
 <!--            </LinearLayout>-->
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnSelectMonth"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:text="@string/select_month"
-                android:textSize="14sp"
-                android:paddingStart="16dp"
-                android:paddingEnd="16dp"
-                style="@style/Widget.MaterialComponents.Button.TextButton"/>
+                android:orientation="horizontal"
+                android:layout_marginBottom="16dp">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnFilterCategory"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/all_categories"
+                    android:textSize="13sp"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="16dp"
+                    style="@style/Widget.MaterialComponents.Button.TextButton"/>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnSelectMonth"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/select_month"
+                    android:textSize="14sp"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="16dp"
+                    style="@style/Widget.MaterialComponents.Button.TextButton"/>
+            </LinearLayout>
 
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"

@@ -96,17 +96,23 @@ public class AccountFragment extends Fragment {
                 @Override
                 public void onSuccess(double rate) {
                     updateLanguageButtonText();
-                    requireActivity().recreate();
+                    restartApp();
                 }
 
                 @Override
                 public void onError(Exception exception) {
                     Toast.makeText(requireContext(), R.string.currency_rate_failed, Toast.LENGTH_SHORT).show();
                     updateLanguageButtonText();
-                    requireActivity().recreate();
+                    restartApp();
                 }
             });
         });
+    }
+
+    private void restartApp() {
+        Intent intent = new Intent(requireContext(), MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
     }
 
     private void setupThemeButton() {
@@ -119,7 +125,7 @@ public class AccountFragment extends Fragment {
             SharedPreferences settingsPrefs = requireContext().getSharedPreferences("settings_prefs", 0);
             settingsPrefs.edit().putBoolean("reset_to_home_after_recreate", true).apply();
             updateThemeButtonText();
-            requireActivity().recreate();
+            restartApp();
         });
     }
 

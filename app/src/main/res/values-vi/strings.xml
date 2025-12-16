@@ -22,17 +22,18 @@
     <string name="error_invalid_credentials">Sai tên đăng nhập hoặc mật khẩu</string>
     <string name="login_success">Đăng nhập thành công!</string>
     <string name="register_success">Đăng ký thành công!</string>
-    <string name="registering">Đang đăng ký...</string>
+    <string name="registering">Đang đăng ký…</string>
     <string name="welcome">Xin chào</string>
     <string name="logout">Đăng xuất</string>
     <string name="logged_in_message">Bạn đã đăng nhập thành công</string>
     <string name="register_failed">Đăng ký tài khoản thất bại.</string>
-    <string name="logging_in">Đang đăng nhập...</string>
+    <string name="logging_in">Đang đăng nhập…</string>
     <string name="nav_transaction">Giao dịch</string>
     <string name="nav_home">Trang chủ</string>
     <string name="nav_add">Thêm</string>
     <string name="nav_budget">Ngân sách</string>
     <string name="nav_account">Tài khoản</string>
+    <string name="nav_payment">Thanh toán</string>
     <string name="manage_categories">QUẢN LÝ DANH MỤC</string>
     <string name="edit">Sửa</string>
     <string name="delete">Xóa</string>
@@ -114,10 +115,26 @@
     <string name="select_month_year">Chọn tháng và năm</string>
     <string name="apply_label">Áp dụng</string>
     <string name="cancel_label">Hủy</string>
+    <string name="close_label">Đóng</string>
     <string name="period_monthly">Theo tháng</string>
     <string name="period_weekly">Theo tuần</string>
     <string name="filter_transactions_title">Bộ lọc giao dịch</string>
     <string name="filter_button">Bộ lọc</string>
+    <string name="payments_title">Thanh toán &amp; Nhắc nhở</string>
+    <string name="no_payments">Chưa có khoản thanh toán</string>
+    <string name="pay">Thanh toán</string>
+    <string name="name">Tên</string>
+    <string name="note">Ghi chú</string>
+    <string name="select_time">Chọn giờ</string>
+    <string name="payment_due_notification_title">Đến hạn thanh toán</string>
+    <string name="payment_due_notification_text">%1$s đến hạn (%2$s)</string>
+    <string name="payment_channel_name">Nhắc nhở thanh toán</string>
+    <string name="payment_channel_desc">Thông báo cho các khoản thanh toán sắp tới</string>
+    <string name="total">Tổng cộng</string>
+    <string name="count">Số lượng</string>
+    <string name="unknown_category">Danh mục không xác định</string>
+    <string name="select_category">Chọn danh mục</string>
+    <string name="fill_all_fields">Vui lòng điền đầy đủ thông tin</string>
     <string-array name="months_names">
         <item>Tháng 1</item>
         <item>Tháng 2</item>

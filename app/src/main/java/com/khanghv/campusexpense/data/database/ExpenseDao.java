@@ -40,6 +40,9 @@ public interface ExpenseDao {
     LiveData<Double> getTotalSpentForMonth(long startDate, long endDate, int userId);
 
     @Query("SELECT SUM(amount) FROM expenses WHERE userId = :userId AND categoryId = :categoryId AND date >= :startDate AND date <= :endDate")
+    LiveData<Double> getTotalSpentForMonthByCategory(long startDate, long endDate, int userId, int categoryId);
+
+    @Query("SELECT SUM(amount) FROM expenses WHERE userId = :userId AND categoryId = :categoryId AND date >= :startDate AND date <= :endDate")
     Double getTotalExpensesByCategoryAndDateRange(int userId, int categoryId, long startDate, long endDate);
 
     @Query("SELECT * FROM expenses WHERE id = :id")
@@ -50,6 +53,9 @@ public interface ExpenseDao {
 
     @Query("SELECT COUNT(*) FROM expenses WHERE userId = :userId AND date >= :startDate AND date <= :endDate")
     LiveData<Integer> getTransactionCountForMonth(long startDate, long endDate, int userId);
+
+    @Query("SELECT COUNT(*) FROM expenses WHERE userId = :userId AND categoryId = :categoryId AND date >= :startDate AND date <= :endDate")
+    LiveData<Integer> getTransactionCountForMonthByCategory(long startDate, long endDate, int userId, int categoryId);
 
     @Query("DELETE FROM expenses WHERE categoryId = :categoryId")
     void deleteExpensesByCategoryId(int categoryId);

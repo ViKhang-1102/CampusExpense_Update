@@ -53,5 +53,6 @@ dependencies {
 
     implementation(libs.room.runtime)
     annotationProcessor(libs.room.compiler)
+    implementation("me.leolin:ShortcutBadger:1.1.22")
 
 }

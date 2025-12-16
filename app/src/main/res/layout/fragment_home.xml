@@ -39,18 +39,27 @@
                 android:letterSpacing="0.02" />
         </com.google.android.material.card.MaterialCardView>
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnSelectMonth"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:id="@+id/layoutHeaderActions"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:orientation="horizontal"
             android:layout_marginTop="8dp"
-            android:text="@string/select_month"
-            android:textSize="14sp"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp"
+            android:layout_marginBottom="8dp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/cardGreeting"
-            style="@style/Widget.MaterialComponents.Button.TextButton"/>
+            app:layout_constraintTop_toBottomOf="@id/cardGreeting">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnSelectMonth"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/select_month"
+                android:textSize="14sp"
+                android:textColor="@color/primary"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                style="@style/Widget.MaterialComponents.Button.TextButton"/>
+        </LinearLayout>
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/cardTotalSpent"
@@ -62,7 +71,7 @@
             app:strokeWidth="0dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/btnSelectMonth">
+            app:layout_constraintTop_toBottomOf="@id/layoutHeaderActions">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -173,7 +182,7 @@
                             android:id="@+id/tvTransactionCount"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="0"
+                            android:text="@string/zero_text"
                             android:textColor="@color/primary"
                             android:textSize="24sp"
                             android:textStyle="bold"

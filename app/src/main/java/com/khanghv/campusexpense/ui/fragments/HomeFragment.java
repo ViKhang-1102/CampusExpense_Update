@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -18,6 +19,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.khanghv.campusexpense.R;
 import com.khanghv.campusexpense.data.ExpenseRepository;
+import com.khanghv.campusexpense.data.database.AppDatabase;
+import com.khanghv.campusexpense.data.database.CategoryDao;
+import com.khanghv.campusexpense.data.model.Category;
 import com.khanghv.campusexpense.data.model.User;
 import com.khanghv.campusexpense.ui.home.BudgetBreakdownAdapter;
 import com.khanghv.campusexpense.util.CurrencyManager;
@@ -39,8 +43,11 @@ public class HomeFragment extends Fragment {
     private androidx.recyclerview.widget.RecyclerView recyclerViewWeekly;
     private com.khanghv.campusexpense.ui.home.WeekSummaryAdapter weeklyAdapter;
     private ExpenseRepository repository;
+    private CategoryDao categoryDao;
     private int currentUserId;
     private String currentMonthYear;
+    private int selectedCategoryId = -1;
+    private String selectedCategoryName;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -68,6 +75,8 @@ public class HomeFragment extends Fragment {
 
         // Init repo
         repository = new ExpenseRepository((android.app.Application) requireContext().getApplicationContext());
+        categoryDao = AppDatabase.getInstance(requireContext()).categoryDao();
+        selectedCategoryName = getString(R.string.all_categories);
 
         View btnSelectMonth = view.findViewById(R.id.btnSelectMonth);
         if (btnSelectMonth != null) {
@@ -88,6 +97,18 @@ public class HomeFragment extends Fragment {
         // Lấy thông tin mới nhất mỗi khi refresh
         currentUserId = getCurrentUserId();
         currentMonthYear = getSelectedMonthYear();
+
+        // Cập nhật text cho nút Select Month
+        View btnSelectMonth = getView() != null ? getView().findViewById(R.id.btnSelectMonth) : null;
+        if (btnSelectMonth instanceof android.widget.Button) {
+            String[] parts = currentMonthYear.split("-");
+            int year = Integer.parseInt(parts[0]);
+            int month = Integer.parseInt(parts[1]) - 1;
+            Calendar cal = Calendar.getInstance();
+            cal.set(year, month, 1);
+            SimpleDateFormat sdf = new SimpleDateFormat("MMMM yyyy", Locale.getDefault());
+            ((android.widget.Button) btnSelectMonth).setText(sdf.format(cal.getTime()));
+        }
 
         // Làm tươi tỷ giá nếu cần (không ép buộc, dùng cache nếu còn hạn)
         CurrencyManager.refreshRateIfNeeded(requireContext(), false, null);
