@@ -67,7 +67,8 @@
     <string name="total_expense">Tổng chi tiêu</string>
     <string name="transaction_count">Số lượng giao dịch</string>
     <string name="no_expenses">Chưa có chi tiêu nào</string>
-    <string name="all_categories">Tất cả danh mục</string>
+
+    <string name="all_categories">Danh mục</string>
     <string name="expense_title">Chi tiêu: %1$s</string>
     <string name="no_transactions">Chưa có giao dịch</string>
     <string name="spent">Đã chi: </string>

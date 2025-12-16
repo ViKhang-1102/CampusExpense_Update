@@ -63,7 +63,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="@string/all_categories"
-                    android:textSize="13sp"
+                    android:textSize="15sp"
                     android:paddingStart="16dp"
                     android:paddingEnd="16dp"
                     style="@style/Widget.MaterialComponents.Button.TextButton"/>
@@ -74,7 +74,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="@string/select_month"
-                    android:textSize="14sp"
+                    android:textSize="15sp"
                     android:paddingStart="16dp"
                     android:paddingEnd="16dp"
                     style="@style/Widget.MaterialComponents.Button.TextButton"/>
