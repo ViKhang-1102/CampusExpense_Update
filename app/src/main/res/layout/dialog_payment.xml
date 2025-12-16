@@ -52,9 +52,9 @@
             android:id="@+id/tvAmountPreview"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="13sp"
+            android:layout_marginBottom="0dp"
             android:textColor="@color/text_secondary"
-            android:layout_marginBottom="16dp" />
+            android:textSize="13sp" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
@@ -66,7 +66,7 @@
             app:boxCornerRadiusTopEnd="16dp"
             app:boxCornerRadiusBottomStart="16dp"
             app:boxCornerRadiusBottomEnd="16dp"
-            android:layout_marginBottom="16dp"
+            android:layout_marginBottom="24dp"
             style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
 
             <com.google.android.material.textfield.TextInputEditText

@@ -23,7 +23,7 @@
                 android:textSize="32sp"
                 android:textStyle="bold"
                 android:textColor="@color/text_primary"
-                android:layout_marginBottom="24dp"
+                android:layout_marginBottom="16dp"
                 android:letterSpacing="0.01" />
 
             <LinearLayout
@@ -34,14 +34,15 @@
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnFilterCategory"
+                    style="@style/Widget.MaterialComponents.Button.TextButton"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="@string/all_categories"
-                    android:textSize="15sp"
+                    android:gravity="left"
+                    android:textSize="14sp"
                     android:paddingStart="16dp"
                     android:paddingEnd="16dp"
-                    style="@style/Widget.MaterialComponents.Button.TextButton"/>
+                    android:text="@string/all_categories"/>
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnSelectMonth"
@@ -49,7 +50,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="@string/select_month"
-                    android:textSize="15sp"
+                    android:textSize="14sp"
                     android:paddingStart="16dp"
                     android:paddingEnd="16dp"
                     style="@style/Widget.MaterialComponents.Button.TextButton"/>
