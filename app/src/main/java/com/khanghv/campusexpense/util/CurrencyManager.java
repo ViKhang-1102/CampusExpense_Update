@@ -178,5 +178,38 @@ public final class CurrencyManager {
         NumberFormat format = NumberFormat.getCurrencyInstance(getCurrencyLocale(context));
         return format.getCurrency().getSymbol(getCurrencyLocale(context));
     }
+
+    public static void attachInputFormatter(android.widget.EditText editText) {
+        if (editText == null) return;
+        android.text.TextWatcher watcher = new android.text.TextWatcher() {
+            private boolean selfChange = false;
+            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override public void onTextChanged(CharSequence s, int start, int before, int count) {}
+            @Override public void afterTextChanged(android.text.Editable s) {
+                if (selfChange) return;
+                String raw = s.toString();
+                if (raw.isEmpty()) return;
+                android.content.Context ctx = editText.getContext();
+                try {
+                    double val = parseDisplayAmount(ctx, raw);
+                    java.text.NumberFormat nf = java.text.NumberFormat.getNumberInstance(getCurrencyLocale(ctx));
+                    if (getDisplayCurrency(ctx) == CurrencyType.VND) {
+                        nf.setMaximumFractionDigits(0);
+                    } else {
+                        nf.setMaximumFractionDigits(2);
+                    }
+                    String formatted = nf.format(val);
+                    selfChange = true;
+                    int cursor = formatted.length();
+                    editText.setText(formatted);
+                    editText.setSelection(Math.min(cursor, formatted.length()));
+                } catch (Exception ignored) {
+                } finally {
+                    selfChange = false;
+                }
+            }
+        };
+        editText.addTextChangedListener(watcher);
+    }
 }
 

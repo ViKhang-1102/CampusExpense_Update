@@ -5,7 +5,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -39,8 +38,6 @@ public class BudgetRecyclerAdapter extends RecyclerView.Adapter<BudgetRecyclerAd
         TextView categoryNameText;
         TextView periodText;
         TextView amountText;
-        ProgressBar progressBar;
-        TextView progressText;
         ImageButton editButton;
         ImageButton deleteButton;
         ViewHolder(View itemView) {
@@ -48,8 +45,6 @@ public class BudgetRecyclerAdapter extends RecyclerView.Adapter<BudgetRecyclerAd
             categoryNameText = itemView.findViewById(R.id.categoryNameText);
             periodText = itemView.findViewById(R.id.periodText);
             amountText = itemView.findViewById(R.id.amountText);
-            progressBar = itemView.findViewById(R.id.progressBar);
-            progressText = itemView.findViewById(R.id.progressText);
 
             editButton = itemView.findViewById(R.id.editButton);
             deleteButton = itemView.findViewById(R.id.deleteButton);
@@ -82,12 +77,7 @@ public class BudgetRecyclerAdapter extends RecyclerView.Adapter<BudgetRecyclerAd
         holder.categoryNameText.setText(categoryName);
         holder.amountText.setText(CurrencyManager.formatDisplayCurrency(context, budget.getAmount()));
         holder.periodText.setText(budget.getPeriod());
-        double spent = 0.0;
-        double percentage = budget.getAmount() > 0 ? spent / budget.getAmount() * 100 : 0;
-        int progress = (int) Math.min(Math.max(percentage, 0), 100);
-        holder.progressBar.setProgress(progress);
         holder.periodText.setText(budget.getPeriod());
-        holder.progressText.setText(context.getString(R.string.budget_percentage_used, percentage));
         holder.editButton.setOnClickListener(v -> onEditClickListener.onEditClick(budget));
         holder.deleteButton.setOnClickListener(v -> onDeleteClickListener.onDeleteClick(budget));
     }

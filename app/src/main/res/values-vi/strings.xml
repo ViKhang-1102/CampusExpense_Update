@@ -54,9 +54,9 @@
     <string name="category_updated">Cập nhật danh mục thành công</string>
     <string name="category_deleted">Xóa danh mục thành công</string>
     <string name="budget_management">Quản lý ngân sách</string>
-    <string name="budget_subtitle">Chi tiết ngân sách</string>
+    <string name="budget_subtitle">Ngân sách thông minh cho cuộc sống</string>
     <string name="no_budget">Chưa có ngân sách</string>
-    <string name="manage_subtitle">Quản lý phụ đề</string>
+    <string name="manage_subtitle">Phân loại ngăn nắp, ví tiền vui vẻ</string>
     <string name="delete_budget">Xóa ngân sách</string>
     <string name="confirm_delete_budget">Xác nhận xóa ngân sách</string>
     <string name="budget_deleted">Đã xóa ngân sách</string>
@@ -111,5 +111,40 @@
     <string name="change_theme">Thay đổi giao diện</string>
     <string name="switch_to_dark">Chuyển sang Dark Mode</string>
     <string name="switch_to_light">Chuyển sang Light Mode</string>
+    <string name="select_month_year">Chọn tháng và năm</string>
+    <string name="apply_label">Áp dụng</string>
+    <string name="cancel_label">Hủy</string>
+    <string name="period_monthly">Theo tháng</string>
+    <string name="period_weekly">Theo tuần</string>
+    <string name="filter_transactions_title">Bộ lọc giao dịch</string>
+    <string name="filter_button">Bộ lọc</string>
+    <string-array name="months_names">
+        <item>Tháng 1</item>
+        <item>Tháng 2</item>
+        <item>Tháng 3</item>
+        <item>Tháng 4</item>
+        <item>Tháng 5</item>
+        <item>Tháng 6</item>
+        <item>Tháng 7</item>
+        <item>Tháng 8</item>
+        <item>Tháng 9</item>
+        <item>Tháng 10</item>
+        <item>Tháng 11</item>
+        <item>Tháng 12</item>
+    </string-array>
+    <string-array name="months_numbers">
+        <item>01</item>
+        <item>02</item>
+        <item>03</item>
+        <item>04</item>
+        <item>05</item>
+        <item>06</item>
+        <item>07</item>
+        <item>08</item>
+        <item>09</item>
+        <item>10</item>
+        <item>11</item>
+        <item>12</item>
+    </string-array>
 
 </resources>

@@ -1,12 +1,14 @@
 <resources>
     <string name="app_name">CampusExpense</string>
 
+    <!--Auth-->
     <string name="login">Login</string>
     <string name="register">Register</string>
     <string name="username">Username</string>
     <string name="password">Password</string>
     <string name="confirm_password">Confirm Password</string>
 
+    <!-- Login and Register -->
     <string name="login_title">Welcome Back!</string>
     <string name="login_subtitle">Login to manage your expenses</string>
     <string name="register_title">Create Account</string>
@@ -30,10 +32,11 @@
     <string name="registering">Registering...</string>
 
     <string name="welcome">Welcome</string>
-    <string name="logout">Logout</string>
     <string name="logged_in_message">You are successfully logged in</string>
     <string name="register_failed">Failed to register this account.</string>
     <string name="logging_in">Logging in...</string>
+
+    <!--BottomNav-->
     <string name="nav_transaction">Transaction</string>
     <string name="nav_home">Home</string>
     <string name="nav_add">Add</string>
@@ -49,7 +52,6 @@
     <string name="add_category">Add Category</string>
     <string name="category_name">Category Name</string>
     <string name="no_categories_placeholder">No categories yet. Tap + to add one.</string>
-
     <string name="save">Save</string>
     <string name="cancel">Cancel</string>
     <string name="category">Category</string>
@@ -63,14 +65,17 @@
     <string name="category_added">Category added successfully</string>
     <string name="category_updated">Category updated successfully</string>
     <string name="category_deleted">Category deleted successfully</string>
+
+    <!-- Budget -->
     <string name="budget_management">Budget Management</string>
-    <string name="budget_subtitle">Budget Subtitle</string>
+    <string name="budget_subtitle">Smarter budgeting for everyday life</string>
     <string name="no_budget">No Budget</string>
-    <string name="manage_subtitle">Manage Subtitle</string>
+    <string name="manage_subtitle">Tidy categories, happy wallet</string>
     <string name="delete_budget">Delete Budget</string>
     <string name="confirm_delete_budget">Confirm Delete Budget</string>
     <string name="budget_deleted">Budget Deleted</string>
 
+    <!-- Transaction (Expense) -->
     <string name="expense_management">Expense Management</string>
     <string name="tab_by_category">By Category</string>
     <string name="tab_by_date">By Date</string>
@@ -95,6 +100,8 @@
     <string name="select_date">Select Date</string>
     <string name="default_percentage_value">0%</string>
 
+
+    <!--Home-->
     <string name="greeting">Welcome, %1$s</string>  <!-- Dynamic: Welcome, Khang -->
     <string name="total_spent_title">Total spent this month</string>
     <string name="total_spent_value">$0.00</string>  <!-- Override bằng code -->
@@ -107,9 +114,16 @@
     <string name="total_budget_label">Total Budget</string>
     <string name="spent_label">Spent</string>
     <string name="remaining_label">Remaining</string>
+
+    <!--Account-->
     <string name="change_language">CHANGE LANGUAGE</string>
     <string name="switch_to_english">Switch to English ($)</string>
     <string name="switch_to_vietnamese">Switch to Vietnamese (₫)</string>
+    <string name="switch_to_dark">Switch to Dark Mode</string>
+    <string name="switch_to_light">Switch to Light Mode</string>
+    <string name="logout">Logout</string>
+
+    <!--Currency-->
     <string name="currency_rate_updating">Updating exchange rate…</string>
     <string name="currency_rate_failed">Could not refresh exchange rate. Using last known rate.</string>
     <string name="amount_with_currency">Amount (%1$s)</string>
@@ -121,6 +135,39 @@
     <string name="weekly_summary_title">Weekly Summary</string>
     <string name="select_month">Select Month</string>
     <string name="change_theme">Change Theme</string>
-    <string name="switch_to_dark">Switch to Dark Mode</string>
-    <string name="switch_to_light">Switch to Light Mode</string>
+    <string name="select_month_year">Select Month and Year</string>
+    <string name="apply_label">Apply</string>
+    <string name="cancel_label">Cancel</string>
+    <string name="period_monthly">Monthly</string>
+    <string name="period_weekly">Weekly</string>
+    <string name="filter_transactions_title">Filter Transactions</string>
+    <string name="filter_button">Filter</string>
+    <string-array name="months_names">
+        <item>January</item>
+        <item>February</item>
+        <item>March</item>
+        <item>April</item>
+        <item>May</item>
+        <item>June</item>
+        <item>July</item>
+        <item>August</item>
+        <item>September</item>
+        <item>October</item>
+        <item>November</item>
+        <item>December</item>
+    </string-array>
+    <string-array name="months_numbers">
+        <item>01</item>
+        <item>02</item>
+        <item>03</item>
+        <item>04</item>
+        <item>05</item>
+        <item>06</item>
+        <item>07</item>
+        <item>08</item>
+        <item>09</item>
+        <item>10</item>
+        <item>11</item>
+        <item>12</item>
+    </string-array>
 </resources>

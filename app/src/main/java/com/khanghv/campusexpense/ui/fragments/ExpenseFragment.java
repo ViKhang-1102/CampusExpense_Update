@@ -47,8 +47,6 @@ public class ExpenseFragment extends Fragment {
     private RecyclerView recyclerView;
     private FloatingActionButton fabAdd;
     private TabLayout tabLayout;
-    private Spinner monthSpinner;
-    private Spinner categoryFilterSpinner;
     private TextView totalExpenseText;
     private TextView expenseCountText;
     private TextView emptyView;
@@ -79,8 +77,10 @@ public class ExpenseFragment extends Fragment {
         recyclerView = view.findViewById(R.id.recyclerView);
         fabAdd = view.findViewById(R.id.fabAdd);
         tabLayout = view.findViewById(R.id.tabLayout);
-        monthSpinner = view.findViewById(R.id.monthSpinner);
-        categoryFilterSpinner = view.findViewById(R.id.categoryFilterSpinner);
+        View btnSelectMonth = view.findViewById(R.id.btnSelectMonth);
+        if (btnSelectMonth != null) {
+            btnSelectMonth.setOnClickListener(v -> showMonthYearPickerDialog());
+        }
         totalExpenseText = view.findViewById(R.id.totalExpenseText);
         expenseCountText = view.findViewById(R.id.expenseCountText);
         emptyView = view.findViewById(R.id.emptyView);
@@ -102,7 +102,6 @@ public class ExpenseFragment extends Fragment {
         currentYear = calendar.get(Calendar.YEAR);
 
         setupTabs();
-        setupSpinners();
         setupRecyclerView();
 
         fabAdd.setOnClickListener(v -> showAddDialog());
@@ -140,61 +139,31 @@ public class ExpenseFragment extends Fragment {
         });
     }
 
-    private void setupSpinners() {
-        Calendar calendar = Calendar.getInstance();
-        List<String> months = new ArrayList<>();
-        int currentMonthIndex = calendar.get(Calendar.MONTH);
-        int currentYearValue = calendar.get(Calendar.YEAR);
-
-        for (int i = -6; i <= 6; i++) {
-            calendar.set(currentYearValue, currentMonthIndex + i, 1);
-            months.add(new SimpleDateFormat("MMMM yyyy", Locale.getDefault()).format(calendar.getTime()));
-        }
-
-        ArrayAdapter<String> monthAdapter = new ArrayAdapter<>(requireContext(),
-                android.R.layout.simple_spinner_item, months);
-        monthAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        monthSpinner.setAdapter(monthAdapter);
-        monthSpinner.setSelection(6);
-        monthSpinner.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(android.widget.AdapterView<?> parent, View view, int position, long id) {
-                calendar.set(currentYearValue, currentMonthIndex + (position - 6), 1);
-                currentMonth = calendar.get(Calendar.MONTH);
-                currentYear = calendar.get(Calendar.YEAR);
-                refreshData();
-            }
-
-            @Override
-            public void onNothingSelected(android.widget.AdapterView<?> parent) {}
+    private void showMonthYearPickerDialog() {
+        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(requireContext());
+        View pickerView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_month_year_picker, null);
+        android.widget.NumberPicker monthPicker = pickerView.findViewById(R.id.monthPicker);
+        android.widget.NumberPicker yearPicker = pickerView.findViewById(R.id.yearPicker);
+        Calendar cal = Calendar.getInstance();
+        int year = cal.get(Calendar.YEAR);
+        String[] months = getResources().getStringArray(R.array.months_numbers);
+        monthPicker.setMinValue(0);
+        monthPicker.setMaxValue(11);
+        monthPicker.setDisplayedValues(months);
+        monthPicker.setValue(currentMonth);
+        yearPicker.setMinValue(year - 5);
+        yearPicker.setMaxValue(year + 1);
+        yearPicker.setValue(currentYear);
+        builder.setView(pickerView);
+        builder.setPositiveButton(getString(R.string.apply_label), (d, which) -> {
+            int selMonth = monthPicker.getValue();
+            int selYear = yearPicker.getValue();
+            currentMonth = selMonth;
+            currentYear = selYear;
+            refreshData();
         });
-
-        List<String> categoryNames = new ArrayList<>();
-        categoryNames.add(getString(R.string.all_categories));
-        categoryList.clear();
-        categoryList.addAll(categoryDao.getAllByUser(currentUserId));
-        for (Category cat : categoryList) {
-            categoryNames.add(cat.getName());
-        }
-
-        ArrayAdapter<String> categoryAdapter = new ArrayAdapter<>(requireContext(),
-                android.R.layout.simple_spinner_item, categoryNames);
-        categoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        categoryFilterSpinner.setAdapter(categoryAdapter);
-        categoryFilterSpinner.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(android.widget.AdapterView<?> parent, View view, int position, long id) {
-                if (position == 0) {
-                    selectedCategoryId = -1;
-                } else {
-                    selectedCategoryId = categoryList.get(position - 1).getId();
-                }
-                refreshData();
-            }
-
-            @Override
-            public void onNothingSelected(android.widget.AdapterView<?> parent) {}
-        });
+        builder.setNegativeButton(getString(R.string.cancel_label), null);
+        builder.show();
     }
 
     private void setupRecyclerView() {
@@ -360,6 +329,7 @@ public class ExpenseFragment extends Fragment {
             String symbol = CurrencyManager.getCurrencySymbol(requireContext());
             amountLayout.setHint(getString(R.string.amount_with_currency, symbol));
         }
+        CurrencyManager.attachInputFormatter(amountInput);
 
         Button dateButton = dialogView.findViewById(R.id.dateButton);
         Button saveButton = dialogView.findViewById(R.id.saveButton);
@@ -463,6 +433,7 @@ public class ExpenseFragment extends Fragment {
             String symbol = CurrencyManager.getCurrencySymbol(requireContext());
             amountLayout.setHint(getString(R.string.amount_with_currency, symbol));
         }
+        CurrencyManager.attachInputFormatter(amountInput);
 
         Button dateButton = dialogView.findViewById(R.id.dateButton);
         Button saveButton = dialogView.findViewById(R.id.saveButton);

@@ -97,21 +97,23 @@ public class BudgetFragment extends Fragment {
         android.widget.NumberPicker yearPicker = view.findViewById(R.id.yearPicker);
         java.util.Calendar cal = java.util.Calendar.getInstance();
         int year = cal.get(java.util.Calendar.YEAR);
-        monthPicker.setMinValue(1);
-        monthPicker.setMaxValue(12);
-        monthPicker.setValue(currentMonth);
+        String[] months = getResources().getStringArray(R.array.months_numbers);
+        monthPicker.setMinValue(0);
+        monthPicker.setMaxValue(11);
+        monthPicker.setDisplayedValues(months);
+        monthPicker.setValue(currentMonth - 1);
         yearPicker.setMinValue(year - 5);
         yearPicker.setMaxValue(year + 1);
         yearPicker.setValue(currentYear);
         builder.setView(view);
-        builder.setPositiveButton("Apply", (d, which) -> {
-            currentMonth = monthPicker.getValue();
+        builder.setPositiveButton(getString(R.string.apply_label), (d, which) -> {
+            currentMonth = monthPicker.getValue() + 1;
             currentYear = yearPicker.getValue();
             // ensure budgets exist for this month by carrying over previous month
             repository.ensureBudgetsForMonth(String.format(java.util.Locale.getDefault(), "%04d-%02d", currentYear, currentMonth), currentUserId);
             refreshBudgetList();
         });
-        builder.setNegativeButton(android.R.string.cancel, null);
+        builder.setNegativeButton(getString(R.string.cancel_label), null);
         builder.show();
     }
 
@@ -180,6 +182,7 @@ public class BudgetFragment extends Fragment {
             String symbol = CurrencyManager.getCurrencySymbol(requireContext());
             amountLayout.setHint(getString(R.string.amount_with_currency, symbol));
         }
+        CurrencyManager.attachInputFormatter(amountInput);
 
         List<String> categoryNameList = new ArrayList<>();
         for (Category cat : categoryList) {
@@ -191,7 +194,7 @@ public class BudgetFragment extends Fragment {
         categoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         categorySpinner.setAdapter(categoryAdapter);
 
-        String[] periods = {"Monthly", "Weekly"};
+        String[] periods = {getString(R.string.period_monthly), getString(R.string.period_weekly)};
         ArrayAdapter<String> periodAdapter = new ArrayAdapter<>(requireContext(),
                 android.R.layout.simple_spinner_item, periods);
         periodAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -239,6 +242,7 @@ public class BudgetFragment extends Fragment {
             String symbol = CurrencyManager.getCurrencySymbol(requireContext());
             amountLayout.setHint(getString(R.string.amount_with_currency, symbol));
         }
+        CurrencyManager.attachInputFormatter(amountInput);
 
         List<String> categoryNameList = new ArrayList<>();
         for (Category cat : categoryList) {
@@ -267,7 +271,7 @@ public class BudgetFragment extends Fragment {
 
         amountInput.setText(CurrencyManager.formatEditableValue(requireContext(), budget.getAmount()));
 
-        String[] periods = {"Monthly", "Weekly"};
+        String[] periods = {getString(R.string.period_monthly), getString(R.string.period_weekly)};
         ArrayAdapter<String> periodAdapter = new ArrayAdapter<>(requireContext(),
                 android.R.layout.simple_spinner_item, periods);
         periodAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);

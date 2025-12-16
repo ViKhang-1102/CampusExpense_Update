@@ -30,6 +30,8 @@ import java.util.Locale;
 
 public class HomeFragment extends Fragment {
     private static final String TAG = "HomeFragment";
+    private static final String PREFS_HOME = "home_filter_prefs";
+    private static final String KEY_MONTH_YEAR = "selected_month_year";
     private TextView tvGreeting, tvTotalSpent, tvTransactionCount, tvAvgPerDay, tvBudget,
             tvTotalBudget, tvSpent, tvRemaining;
     private RecyclerView recyclerViewBreakdown;
@@ -85,7 +87,7 @@ public class HomeFragment extends Fragment {
     private void refreshData() {
         // Lấy thông tin mới nhất mỗi khi refresh
         currentUserId = getCurrentUserId();
-        currentMonthYear = getCurrentMonthYear();
+        currentMonthYear = getSelectedMonthYear();
 
         // Làm tươi tỷ giá nếu cần (không ép buộc, dùng cache nếu còn hạn)
         CurrencyManager.refreshRateIfNeeded(requireContext(), false, null);
@@ -178,6 +180,15 @@ public class HomeFragment extends Fragment {
         return sdf.format(cal.getTime());
     }
 
+    private String getSelectedMonthYear() {
+        SharedPreferences prefs = requireContext().getSharedPreferences(PREFS_HOME, Context.MODE_PRIVATE);
+        String saved = prefs.getString(KEY_MONTH_YEAR, null);
+        if (saved != null && saved.matches("\\d{4}-\\d{2}")) {
+            return saved;
+        }
+        return getCurrentMonthYear();
+    }
+
     private int getDaysInMonth(String monthYear) {
         String[] parts = monthYear.split("-");
         Calendar cal = Calendar.getInstance();
@@ -201,20 +212,24 @@ public class HomeFragment extends Fragment {
         String[] parts = getCurrentMonthYear().split("-");
         int currentMonth = Integer.parseInt(parts[1]);
         int currentYear = Integer.parseInt(parts[0]);
-        monthPicker.setMinValue(1);
-        monthPicker.setMaxValue(12);
-        monthPicker.setValue(currentMonth);
+        String[] months = getResources().getStringArray(R.array.months_numbers);
+        monthPicker.setMinValue(0);
+        monthPicker.setMaxValue(11);
+        monthPicker.setDisplayedValues(months);
+        monthPicker.setValue(currentMonth - 1);
         yearPicker.setMinValue(year - 5);
         yearPicker.setMaxValue(year + 1);
         yearPicker.setValue(currentYear);
         builder.setView(pickerView);
-        builder.setPositiveButton("Apply", (d, which) -> {
-            int selMonth = monthPicker.getValue();
+        builder.setPositiveButton(getString(R.string.apply_label), (d, which) -> {
+            int selMonth = monthPicker.getValue() + 1;
             int selYear = yearPicker.getValue();
             currentMonthYear = String.format(Locale.getDefault(), "%04d-%02d", selYear, selMonth);
+            SharedPreferences prefs = requireContext().getSharedPreferences(PREFS_HOME, Context.MODE_PRIVATE);
+            prefs.edit().putString(KEY_MONTH_YEAR, currentMonthYear).apply();
             refreshData();
         });
-        builder.setNegativeButton(android.R.string.cancel, null);
+        builder.setNegativeButton(getString(R.string.cancel_label), null);
         builder.show();
     }
 
@@ -236,6 +251,9 @@ public class HomeFragment extends Fragment {
         java.util.List<com.khanghv.campusexpense.ui.home.WeekSummaryAdapter.WeekSummaryItem> items = new java.util.ArrayList<>();
         long cursor = startMonth;
         int weekIndex = 1;
+        Calendar todayCal = Calendar.getInstance();
+        boolean isSelectedCurrentMonth = (todayCal.get(Calendar.YEAR) == year) && (todayCal.get(Calendar.MONTH) == month);
+        long todayMillis = todayCal.getTimeInMillis();
         com.khanghv.campusexpense.data.database.ExpenseDao expenseDao = com.khanghv.campusexpense.data.database.AppDatabase.getInstance(requireContext()).expenseDao();
         while (cursor < startMonth + (long) daysInMonth * 24L * 60L * 60L * 1000L) {
             long weekStart = cursor;
@@ -244,7 +262,8 @@ public class HomeFragment extends Fragment {
             int count = expenseDao.getExpenseCountByDateRange(userId, weekStart, weekEnd);
             double spent = total != null ? total : 0.0;
             String label = getString(R.string.week_n, weekIndex);
-            items.add(new com.khanghv.campusexpense.ui.home.WeekSummaryAdapter.WeekSummaryItem(label, spent, count));
+            boolean highlight = isSelectedCurrentMonth && todayMillis >= weekStart && todayMillis <= weekEnd;
+            items.add(new com.khanghv.campusexpense.ui.home.WeekSummaryAdapter.WeekSummaryItem(label, spent, count, highlight));
             cursor = weekEnd + 1;
             weekIndex++;
         }

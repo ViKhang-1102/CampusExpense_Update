@@ -19,10 +19,12 @@ public class WeekSummaryAdapter extends RecyclerView.Adapter<WeekSummaryAdapter.
         public final String label;
         public final double totalSpent;
         public final int transactionCount;
-        public WeekSummaryItem(String label, double totalSpent, int transactionCount) {
+        public final boolean isCurrentWeek;
+        public WeekSummaryItem(String label, double totalSpent, int transactionCount, boolean isCurrentWeek) {
             this.label = label;
             this.totalSpent = totalSpent;
             this.transactionCount = transactionCount;
+            this.isCurrentWeek = isCurrentWeek;
         }
     }
 
@@ -42,6 +44,7 @@ public class WeekSummaryAdapter extends RecyclerView.Adapter<WeekSummaryAdapter.
         holder.tvWeekLabel.setText(item.label);
         holder.tvWeekSpent.setText(CurrencyManager.formatDisplayCurrency(holder.itemView.getContext(), item.totalSpent));
         holder.tvWeekCount.setText(holder.itemView.getContext().getString(R.string.transactions_count_format, item.transactionCount));
+        holder.currentWeekDot.setVisibility(item.isCurrentWeek ? View.VISIBLE : View.GONE);
     }
 
     @Override
@@ -59,11 +62,13 @@ public class WeekSummaryAdapter extends RecyclerView.Adapter<WeekSummaryAdapter.
         TextView tvWeekLabel;
         TextView tvWeekSpent;
         TextView tvWeekCount;
+        View currentWeekDot;
         ViewHolder(@NonNull View itemView) {
             super(itemView);
             tvWeekLabel = itemView.findViewById(R.id.tvWeekLabel);
             tvWeekSpent = itemView.findViewById(R.id.tvWeekSpent);
             tvWeekCount = itemView.findViewById(R.id.tvWeekCount);
+            currentWeekDot = itemView.findViewById(R.id.currentWeekDot);
         }
     }
 }
