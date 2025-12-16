@@ -161,11 +161,14 @@ public final class CurrencyManager {
 
     public static String formatEditableValue(Context context, double baseAmount) {
         double displayAmount = fromBaseCurrency(context, baseAmount);
-        DecimalFormat decimalFormat = new DecimalFormat(
-                getDisplayCurrency(context) == CurrencyType.VND ? "###,###" : "###,###.##"
-        );
-        decimalFormat.setGroupingUsed(false);
-        return decimalFormat.format(displayAmount);
+        NumberFormat nf = NumberFormat.getNumberInstance(getCurrencyLocale(context));
+        nf.setGroupingUsed(true);
+        if (getDisplayCurrency(context) == CurrencyType.VND) {
+            nf.setMaximumFractionDigits(0);
+        } else {
+            nf.setMaximumFractionDigits(2);
+        }
+        return nf.format(displayAmount);
     }
 
     public static Locale getCurrencyLocale(Context context) {

@@ -43,6 +43,13 @@ public class BudgetBreakdownAdapter extends RecyclerView.Adapter<BudgetBreakdown
         String percentText = holder.itemView.getContext().getString(R.string.percentage_format, item.percentage);
         holder.tvPercentage.setText(percentText);
         holder.progressBar.setProgress(Math.min(item.percentage, 100));
+        TextView tvTrend = holder.itemView.findViewById(R.id.tvTrend);
+        if (tvTrend != null) {
+            boolean over = item.percentage > 100;
+            tvTrend.setText(over ? "▲" : "▼");
+            int colorRes = over ? R.color.error : R.color.success;
+            tvTrend.setTextColor(holder.itemView.getContext().getResources().getColor(colorRes));
+        }
         
         holder.tvSpent.setText(CurrencyManager.formatDisplayCurrency(holder.itemView.getContext(), item.spentAmount));
         holder.tvBudget.setText(CurrencyManager.formatDisplayCurrency(holder.itemView.getContext(), item.budgetAmount));

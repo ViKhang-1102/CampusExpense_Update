@@ -51,14 +51,29 @@
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnSelectMonth"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/select_month"
-                android:textSize="14sp"
-                android:textColor="@color/primary"
                 android:paddingStart="16dp"
                 android:paddingEnd="16dp"
-                style="@style/Widget.MaterialComponents.Button.TextButton"/>
+                android:text="@string/select_month"
+                android:textColor="@color/primary"
+                android:textSize="14sp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnToggleBreakdown"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="177dp"
+                android:layout_height="wrap_content"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:text="@string/breakdown_title"
+                android:textColor="@color/primary"
+                android:textSize="14sp"
+                app:icon="@drawable/ic_expand_less"
+                app:iconGravity="textEnd"
+                app:iconPadding="8dp"
+                app:iconSize="18dp" />
         </LinearLayout>
 
         <com.google.android.material.card.MaterialCardView

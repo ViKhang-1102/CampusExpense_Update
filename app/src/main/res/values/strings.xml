@@ -109,7 +109,7 @@
     <string name="transactions_title">Transactions</string>
     <string name="avg_per_day">Avg/day</string>
     <string name="budget">Budget</string>
-    <string name="breakdown_title">Expense Breakdown</string>
+    <string name="breakdown_title">Breakdown</string>
     <string name="breakdown_value">0% $0.00 0%</string>  <!-- Override -->
     <string name="summary_title">Monthly Summary</string>
     <string name="total_budget_label">Total Budget</string>
@@ -135,11 +135,13 @@
     <string name="week_n">Week %1$d</string>
     <string name="weekly_summary_title">Weekly Summary</string>
     <string name="select_month">Select Month</string>
+    <string name="toggle_breakdown">Toggle Breakdown</string>
     <string name="change_theme">Change Theme</string>
     <string name="select_month_year">Select Month and Year</string>
     <string name="apply_label">Apply</string>
     <string name="cancel_label">Cancel</string>
     <string name="close_label">Close</string>
+    <string name="clone">Clone</string>
     <string name="period_monthly">Monthly</string>
     <string name="period_weekly">Weekly</string>
     <string name="filter_transactions_title">Filter Transactions</string>
@@ -159,6 +161,35 @@
     <string name="unknown_category">Unknown Category</string>
     <string name="select_category">Select Category</string>
     <string name="fill_all_fields">Please fill all fields</string>
+    <string name="zero_text">0</string>
+    <string name="add_amount">Add Amount</string>
+    <string name="view_history">View History</string>
+    <string name="weekly">Weekly</string>
+    <string name="monthly">Monthly</string>
+    <string name="reset_db">Reset Database</string>
+    <string name="confirm_reset_db">Are you sure you want to reset all data?</string>
+    <string name="database_reset">Database reset</string>
+    <string name="transfer">Transfer</string>
+    <string name="from_label">From</string>
+    <string name="to_label">To</string>
+    <string name="transfer_to">Transfer to %1$s</string>
+    <string name="transfer_from">Transfer from %1$s</string>
+    <string name="transfer_done">Transfer completed</string>
+    <string name="no_target_budget">No target budget</string>
+    <string name="paid_label">Paid</string>
+    <!-- Common validation/error -->
+    <string name="invalid_amount">Invalid amount</string>
+    <string name="please_add_categories_first">Please add categories first</string>
+    <string name="budget_exists_selected_month">Budget for this category already exists for selected month</string>
+    <string name="budget_added_success">Budget added successfully</string>
+    <string name="please_enter_amount">Please enter amount</string>
+    <string name="please_select_period">Please select period</string>
+    <string name="amount_must_be_greater_than_zero">Amount must be greater than 0</string>
+    <string name="budget_updated_success">Budget updated successfully</string>
+    <string name="error_cloning_payment_format">Error cloning payment: %1$s</string>
+    <string name="error_saving_payment_format">Error saving payment: %1$s</string>
+    <string name="error_opening_edit_dialog_format">Error opening edit dialog: %1$s</string>
+    <string name="transfer_over_limit">Transfer amount exceeds current source budget</string>
     <string-array name="months_names">
         <item>January</item>
         <item>February</item>
@@ -187,5 +218,4 @@
         <item>11</item>
         <item>12</item>
     </string-array>
-    <string name="zero_text">0</string>
 </resources>

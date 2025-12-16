@@ -91,7 +91,7 @@
     <string name="transactions_title">Giao dịch</string>
     <string name="avg_per_day">TB/ngày</string>
     <string name="budget">Ngân sách</string>
-    <string name="breakdown_title">Phân bổ chi tiêu</string>
+    <string name="breakdown_title">Chi tiêu (%)</string>
     <string name="breakdown_value">0% 0₫ 0%</string>
     <string name="summary_title">Tổng kết tháng</string>
     <string name="total_budget_label">Tổng ngân sách</string>
@@ -110,6 +110,7 @@
     <string name="week_n">Tuần %1$d</string>
     <string name="weekly_summary_title">Tổng kết theo tuần</string>
     <string name="select_month">Chọn tháng</string>
+    <string name="toggle_breakdown">Chuyển đổi phân bổ</string>
     <string name="change_theme">Thay đổi giao diện</string>
     <string name="switch_to_dark">Chuyển sang Dark Mode</string>
     <string name="switch_to_light">Chuyển sang Light Mode</string>
@@ -117,8 +118,36 @@
     <string name="apply_label">Áp dụng</string>
     <string name="cancel_label">Hủy</string>
     <string name="close_label">Đóng</string>
+    <string name="view_history">Xem lịch sử</string>
+    <string name="weekly">Theo tuần</string>
+    <string name="monthly">Theo tháng</string>
+    <string name="reset_db">Đặt lại dữ liệu</string>
+    <string name="confirm_reset_db">Bạn có chắc muốn đặt lại toàn bộ dữ liệu?</string>
+    <string name="database_reset">Đã đặt lại cơ sở dữ liệu</string>
+    <string name="transfer">Chuyển</string>
+    <string name="from_label">Từ</string>
+    <string name="to_label">Đến</string>
+    <string name="transfer_to">Chuyển sang %1$s</string>
+    <string name="transfer_from">Chuyển từ %1$s</string>
+    <string name="transfer_done">Đã chuyển xong</string>
+    <string name="no_target_budget">Không có ngân sách đích</string>
+    <string name="paid_label">Đã trả</string>
+    <!-- Common validation/error -->
+    <string name="invalid_amount">Số tiền không hợp lệ</string>
+    <string name="please_add_categories_first">Vui lòng thêm danh mục trước</string>
+    <string name="budget_exists_selected_month">Ngân sách cho danh mục này đã tồn tại trong tháng đã chọn</string>
+    <string name="budget_added_success">Thêm ngân sách thành công</string>
+    <string name="please_enter_amount">Vui lòng nhập số tiền</string>
+    <string name="please_select_period">Vui lòng chọn kỳ hạn</string>
+    <string name="amount_must_be_greater_than_zero">Số tiền phải lớn hơn 0</string>
+    <string name="budget_updated_success">Cập nhật ngân sách thành công</string>
+    <string name="error_cloning_payment_format">Lỗi nhân bản khoản thanh toán: %1$s</string>
+    <string name="error_saving_payment_format">Lỗi lưu khoản thanh toán: %1$s</string>
+    <string name="error_opening_edit_dialog_format">Lỗi mở hộp thoại chỉnh sửa: %1$s</string>
+    <string name="transfer_over_limit">Số tiền chuyển vượt quá ngân sách hiện tại</string>
     <string name="period_monthly">Theo tháng</string>
     <string name="period_weekly">Theo tuần</string>
+    <string name="clone">Nhân bản</string>
     <string name="filter_transactions_title">Bộ lọc giao dịch</string>
     <string name="filter_button">Bộ lọc</string>
     <string name="payments_title">Thanh toán &amp; Nhắc nhở</string>
@@ -136,6 +165,8 @@
     <string name="unknown_category">Danh mục không xác định</string>
     <string name="select_category">Chọn danh mục</string>
     <string name="fill_all_fields">Vui lòng điền đầy đủ thông tin</string>
+    <string name="add_amount">Thêm số tiền</string>
+    <string name="zero_text">0</string>
     <string-array name="months_names">
         <item>Tháng 1</item>
         <item>Tháng 2</item>

@@ -385,7 +385,7 @@ public class ExpenseFragment extends Fragment {
         categoryList.addAll(categoryDao.getAllByUser(currentUserId));
 
         if (categoryList.isEmpty()) {
-            Toast.makeText(requireContext(), "Please add categories first", Toast.LENGTH_SHORT).show();
+            Toast.makeText(requireContext(), getString(R.string.please_add_categories_first), Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -443,7 +443,7 @@ public class ExpenseFragment extends Fragment {
             String description = descriptionInput.getText().toString().trim();
 
             if (TextUtils.isEmpty(amountStr)) {
-                Toast.makeText(requireContext(), "Please enter amount", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), getString(R.string.please_enter_amount), Toast.LENGTH_SHORT).show();
                 return;
             }
 
@@ -452,11 +452,11 @@ public class ExpenseFragment extends Fragment {
                 double displayAmount = CurrencyManager.parseDisplayAmount(requireContext(), amountStr);
                 amount = CurrencyManager.toBaseCurrency(requireContext(), displayAmount);
                 if (amount <= 0) {
-                    Toast.makeText(requireContext(), "Amount must be greater than 0", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(requireContext(), getString(R.string.amount_must_be_greater_than_zero), Toast.LENGTH_SHORT).show();
                     return;
                 }
             } catch (NumberFormatException e) {
-                Toast.makeText(requireContext(), "Invalid amount", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), getString(R.string.invalid_amount), Toast.LENGTH_SHORT).show();
                 return;
             }
 
@@ -562,7 +562,7 @@ public class ExpenseFragment extends Fragment {
             String description = descriptionInput.getText().toString().trim();
 
             if (TextUtils.isEmpty(amountStr)) {
-                Toast.makeText(requireContext(), "Please enter amount", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), getString(R.string.please_enter_amount), Toast.LENGTH_SHORT).show();
                 return;
             }
 
@@ -571,11 +571,11 @@ public class ExpenseFragment extends Fragment {
                 double displayAmount = CurrencyManager.parseDisplayAmount(requireContext(), amountStr);
                 amount = CurrencyManager.toBaseCurrency(requireContext(), displayAmount);
                 if (amount <= 0) {
-                    Toast.makeText(requireContext(), "Amount must be greater than 0", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(requireContext(), getString(R.string.amount_must_be_greater_than_zero), Toast.LENGTH_SHORT).show();
                     return;
                 }
             } catch (NumberFormatException e) {
-                Toast.makeText(requireContext(), "Invalid amount", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), getString(R.string.invalid_amount), Toast.LENGTH_SHORT).show();
                 return;
             }
 

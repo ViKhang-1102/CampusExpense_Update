@@ -7,19 +7,13 @@
     android:padding="24dp">
 
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/category"
-        android:textSize="16sp"
-        android:textColor="@color/text_primary"
-        android:textStyle="bold"
-        android:layout_marginBottom="12dp" />
-
-    <Spinner
-        android:id="@+id/categorySpinner"
+        android:id="@+id/dialogTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingVertical="12dp"
+        android:text="@string/edit"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textColor="@color/text_primary"
         android:layout_marginBottom="16dp" />
 
     <com.google.android.material.textfield.TextInputLayout
@@ -45,21 +39,28 @@
 
     </com.google.android.material.textfield.TextInputLayout>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/period"
-        android:textSize="16sp"
-        android:textColor="@color/text_primary"
-        android:textStyle="bold"
-        android:layout_marginBottom="12dp" />
-
-    <Spinner
-        android:id="@+id/periodSpinner"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/noteLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingVertical="12dp"
-        android:layout_marginBottom="24dp" />
+        android:hint="@string/note"
+        app:hintTextColor="@color/primary"
+        app:boxStrokeColor="@color/primary"
+        app:boxCornerRadiusTopStart="16dp"
+        app:boxCornerRadiusTopEnd="16dp"
+        app:boxCornerRadiusBottomStart="16dp"
+        app:boxCornerRadiusBottomEnd="16dp"
+        android:layout_marginBottom="24dp"
+        style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/noteInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="text"
+            android:textSize="16sp" />
+
+    </com.google.android.material.textfield.TextInputLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -71,9 +72,9 @@
             android:id="@+id/cancelButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/cancel"
+            android:text="@string/cancel_label"
             android:textAllCaps="false"
-            android:textColor="@color/text_secondary"
+            android:textColor="@color/text_primary"
             app:backgroundTint="@android:color/transparent"
             android:layout_marginEnd="12dp"
             android:minHeight="48dp"
@@ -85,6 +86,7 @@
             android:layout_height="wrap_content"
             android:text="@string/save"
             android:textAllCaps="false"
+            android:textColor="@color/white"
             app:backgroundTint="@color/primary"
             android:minHeight="48dp"
             app:cornerRadius="12dp" />

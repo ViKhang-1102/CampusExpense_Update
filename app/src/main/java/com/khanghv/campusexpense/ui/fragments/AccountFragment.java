@@ -62,7 +62,10 @@ public class AccountFragment extends Fragment {
 
         logoutButton.setOnClickListener(v -> logout());
         setupLanguageButton();
-        setupThemeButton();
+        if (themeButton != null) {
+            themeButton.setVisibility(View.GONE);
+        }
+        setupResetDbButton(view);
         return view;
     }
 
@@ -95,12 +98,14 @@ public class AccountFragment extends Fragment {
             CurrencyManager.refreshRateIfNeeded(requireContext(), true, new CurrencyManager.RateUpdateListener() {
                 @Override
                 public void onSuccess(double rate) {
+                    if (!isAdded()) return;
                     updateLanguageButtonText();
                     restartApp();
                 }
 
                 @Override
                 public void onError(Exception exception) {
+                    if (!isAdded()) return;
                     Toast.makeText(requireContext(), R.string.currency_rate_failed, Toast.LENGTH_SHORT).show();
                     updateLanguageButtonText();
                     restartApp();
@@ -110,41 +115,53 @@ public class AccountFragment extends Fragment {
     }
 
     private void restartApp() {
-        Intent intent = new Intent(requireContext(), MainActivity.class);
+        android.content.Context ctx = getContext();
+        if (ctx == null) return;
+        Intent intent = new Intent(ctx, MainActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
     }
 
-    private void setupThemeButton() {
-        if (themeButton == null) {
-            return;
-        }
-        updateThemeButtonText();
-        themeButton.setOnClickListener(v -> {
-            com.khanghv.campusexpense.util.ThemeManager.toggle(requireContext());
-            SharedPreferences settingsPrefs = requireContext().getSharedPreferences("settings_prefs", 0);
-            settingsPrefs.edit().putBoolean("reset_to_home_after_recreate", true).apply();
-            updateThemeButtonText();
-            restartApp();
-        });
-    }
+    private void setupThemeButton() {}
 
     private void updateLanguageButtonText() {
-        LocaleManager.Language language = LocaleManager.getLanguage(requireContext());
+        android.content.Context ctx = getContext();
+        if (ctx == null || languageButton == null) return;
+        LocaleManager.Language language = LocaleManager.getLanguage(ctx);
         int textRes = language == LocaleManager.Language.VI ?
                 R.string.switch_to_english :
                 R.string.switch_to_vietnamese;
         languageButton.setText(textRes);
     }
 
-    private void updateThemeButtonText() {
-        com.khanghv.campusexpense.util.ThemeManager.ThemeMode mode =
-                com.khanghv.campusexpense.util.ThemeManager.getTheme(requireContext());
-        int textRes = mode == com.khanghv.campusexpense.util.ThemeManager.ThemeMode.DARK ?
-                R.string.switch_to_light :
-                R.string.switch_to_dark;
-        if (themeButton != null) {
-            themeButton.setText(textRes);
-        }
+    private void updateThemeButtonText() {}
+    
+    private void setupResetDbButton(View view) {
+        android.widget.Button resetButton = view.findViewById(R.id.resetDbButton);
+        if (resetButton == null) return;
+        resetButton.setOnClickListener(v -> {
+            new android.app.AlertDialog.Builder(requireContext())
+                    .setTitle(getString(R.string.reset_db))
+                    .setMessage(getString(R.string.confirm_reset_db))
+                    .setPositiveButton(getString(R.string.delete), (d, w) -> {
+                        new Thread(() -> {
+                            com.khanghv.campusexpense.data.database.AppDatabase db = com.khanghv.campusexpense.data.database.AppDatabase.getInstance(requireContext());
+                            db.clearAllTables();
+                            SharedPreferences.Editor editor = sharedPreferences.edit();
+                            editor.clear();
+                            editor.apply();
+                            if (getActivity() != null) {
+                                getActivity().runOnUiThread(() -> {
+                                    Toast.makeText(requireContext(), getString(R.string.database_reset), Toast.LENGTH_SHORT).show();
+                                    Intent intent = new Intent(requireContext(), LoginActivity.class);
+                                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                    startActivity(intent);
+                                });
+                            }
+                        }).start();
+                    })
+                    .setNegativeButton(getString(R.string.cancel_label), null)
+                    .show();
+        });
     }
 }

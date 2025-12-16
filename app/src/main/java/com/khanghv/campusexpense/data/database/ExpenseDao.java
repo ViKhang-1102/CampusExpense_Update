@@ -62,4 +62,7 @@ public interface ExpenseDao {
 
     @Query("DELETE FROM expenses WHERE budgetId = :budgetId")
     void deleteExpensesByBudgetId(int budgetId);
+
+    @Query("DELETE FROM expenses WHERE id = :id")
+    void deleteById(int id);
 }

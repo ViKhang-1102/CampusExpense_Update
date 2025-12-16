@@ -39,4 +39,7 @@ public interface MonthlyBudgetDao {
 
     @Query("DELETE FROM monthly_budgets WHERE categoryId = :categoryId")
     void deleteBudgetsByCategoryId(int categoryId);
+
+    @Query("DELETE FROM monthly_budgets WHERE id = :id")
+    void deleteById(int id);
 }

@@ -49,12 +49,18 @@ public class PaymentFragment extends Fragment {
     private TextView emptyView;
     private TextView tvSubtitle;
     private TabLayout tabLayout;
+    private com.google.android.material.checkbox.MaterialCheckBox cbShowPaid;
+    private boolean showPaid = false;
 
     private PaymentDao paymentDao;
     private ExpenseDao expenseDao;
     private CategoryDao categoryDao;
     private int currentUserId;
     private List<Payment> allPayments;
+    private int currentMonth;
+    private int currentYear;
+    private int selectedCategoryId = -1;
+    private String selectedCategoryName;
 
     // 0: By Category, 1: By Date
     private int currentTab = 1;
@@ -68,6 +74,9 @@ public class PaymentFragment extends Fragment {
         fabAddPayment = view.findViewById(R.id.fabAddPayment);
         tvSubtitle = view.findViewById(R.id.tvSubtitle);
         tabLayout = view.findViewById(R.id.tabLayout);
+        cbShowPaid = view.findViewById(R.id.cbShowPaid);
+        View btnSelectMonth = view.findViewById(R.id.btnSelectMonth);
+        View btnFilterCategory = view.findViewById(R.id.btnFilterCategory);
 
         currentUserId = requireContext().getSharedPreferences("user_prefs", Context.MODE_PRIVATE).getInt("userId", -1);
         AppDatabase db = AppDatabase.getInstance(requireContext());
@@ -75,12 +84,27 @@ public class PaymentFragment extends Fragment {
         expenseDao = db.expenseDao();
         categoryDao = db.categoryDao();
         allPayments = new ArrayList<>();
+        java.util.Calendar cal = java.util.Calendar.getInstance();
+        currentMonth = cal.get(java.util.Calendar.MONTH) + 1;
+        currentYear = cal.get(java.util.Calendar.YEAR);
+        selectedCategoryName = getString(R.string.all_categories);
 
         setupTabs();
 
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
 
         fabAddPayment.setOnClickListener(v -> showAddPaymentDialog());
+        initFilters(view);
+        if (btnSelectMonth != null) {
+            btnSelectMonth.setOnClickListener(v -> showMonthYearPickerDialog());
+            updateSelectMonthButtonText(btnSelectMonth);
+        }
+        if (btnFilterCategory != null) {
+            btnFilterCategory.setOnClickListener(v -> showCategoryFilterDialog());
+            if (btnFilterCategory instanceof android.widget.Button) {
+                ((android.widget.Button) btnFilterCategory).setText(selectedCategoryName);
+            }
+        }
         refreshData();
         return view;
     }
@@ -106,6 +130,19 @@ public class PaymentFragment extends Fragment {
         });
     }
 
+    private void initFilters(View root) {
+        android.content.SharedPreferences prefs = requireContext().getSharedPreferences("payment_prefs", android.content.Context.MODE_PRIVATE);
+        showPaid = prefs.getBoolean("show_paid", false);
+        if (cbShowPaid != null) {
+            cbShowPaid.setChecked(showPaid);
+            cbShowPaid.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                showPaid = isChecked;
+                prefs.edit().putBoolean("show_paid", showPaid).apply();
+                refreshData();
+            });
+        }
+    }
+
     @Override
     public void onResume() {
         super.onResume();
@@ -116,6 +153,16 @@ public class PaymentFragment extends Fragment {
         new Thread(() -> {
             if (getContext() == null) return;
             List<Payment> payments = paymentDao.getAllByUser(currentUserId);
+            long[] range = getMonthRange(currentYear, currentMonth);
+            List<Payment> monthFiltered = new ArrayList<>();
+            for (Payment p : payments) {
+                long d = p.getDate();
+                if (d >= range[0] && d <= range[1]) {
+                    if (selectedCategoryId == -1 || p.getCategoryId() == selectedCategoryId) {
+                        monthFiltered.add(p);
+                    }
+                }
+            }
             List<Category> categories = new ArrayList<>();
             if (currentTab == 0) {
                 categories = categoryDao.getAllByUser(currentUserId);
@@ -125,7 +172,7 @@ public class PaymentFragment extends Fragment {
             if (getActivity() == null) return;
             getActivity().runOnUiThread(() -> {
                 allPayments.clear();
-                allPayments.addAll(payments);
+                allPayments.addAll(monthFiltered);
 
                 if (currentTab == 0) {
                     refreshCategoryData(finalCategories);
@@ -159,7 +206,9 @@ public class PaymentFragment extends Fragment {
             // But maybe user wants to see Pending amount specifically?
             // "By Category" -> "Total: $X".
             // Let's stick to total amount of all items in the list.
-            
+            if ("Paid".equals(p.getStatus()) && !showPaid) {
+                continue;
+            }
             if (!categoryMap.containsKey(p.getCategoryId())) {
                 categoryMap.put(p.getCategoryId(), new ArrayList<>());
                 categoryTotal.put(p.getCategoryId(), 0.0);
@@ -198,16 +247,28 @@ public class PaymentFragment extends Fragment {
     }
 
     private void refreshDateData() {
-        PaymentAdapter adapter = new PaymentAdapter(allPayments, this::refreshData);
+        List<Payment> pendingFirst = new ArrayList<>();
+        List<Payment> paidList = new ArrayList<>();
+        for (Payment p : allPayments) {
+            if ("Paid".equals(p.getStatus())) {
+                if (showPaid) paidList.add(p);
+            } else {
+                pendingFirst.add(p);
+            }
+        }
+        List<Payment> displayList = new ArrayList<>();
+        displayList.addAll(pendingFirst);
+        displayList.addAll(paidList);
+        PaymentAdapter adapter = new PaymentAdapter(displayList, this::refreshData);
         recyclerView.setAdapter(adapter);
         
         double grandTotal = 0;
-        for (Payment p : allPayments) grandTotal += p.getAmount();
+        for (Payment p : displayList) grandTotal += p.getAmount();
         
         String totalStr = CurrencyManager.formatDisplayCurrency(requireContext(), grandTotal);
-        tvSubtitle.setText(String.format("%s: %s | %s: %d", getString(R.string.total), totalStr, getString(R.string.count), allPayments.size()));
+        tvSubtitle.setText(String.format("%s: %s | %s: %d", getString(R.string.total), totalStr, getString(R.string.count), displayList.size()));
         
-        emptyView.setVisibility(allPayments.isEmpty() ? View.VISIBLE : View.GONE);
+        emptyView.setVisibility(displayList.isEmpty() ? View.VISIBLE : View.GONE);
     }
 
     private void showCategoryPaymentsDialog(int categoryId, String categoryName, List<Payment> payments) {
@@ -219,23 +280,7 @@ public class PaymentFragment extends Fragment {
         
         RecyclerView rv = view.findViewById(R.id.recyclerViewPayments);
         rv.setLayoutManager(new LinearLayoutManager(requireContext()));
-        PaymentAdapter adapter = new PaymentAdapter(payments, () -> {
-            // Update main data
-            refreshData();
-            // Update dialog data
-            List<Payment> updatedList = new ArrayList<>();
-            for (Payment p : allPayments) {
-                if (p.getCategoryId() == categoryId) {
-                    updatedList.add(p);
-                }
-            }
-            // We need to cast or access the adapter to update it.
-            // Since we are inside the lambda, we need a final reference or similar.
-            // But we can't reference 'adapter' before it's created.
-            // So we need to handle this.
-            // Let's use a method in the adapter or setup the callback after creation?
-            // Or use a wrapper.
-        });
+        PaymentAdapter adapter = new PaymentAdapter(payments, this::refreshData);
         rv.setAdapter(adapter);
         
         // Fix for recursive reference: set the listener AFTER creation
@@ -258,6 +303,97 @@ public class PaymentFragment extends Fragment {
         btnClose.setOnClickListener(v -> dialog.dismiss());
         
         dialog.show();
+    }
+    
+    private void updateSelectMonthButtonText(View btn) {
+        if (btn instanceof android.widget.Button) {
+            java.util.Calendar cal = java.util.Calendar.getInstance();
+            cal.set(currentYear, currentMonth - 1, 1);
+            java.util.Locale locale = java.util.Locale.getDefault();
+            if ("vi".equalsIgnoreCase(locale.getLanguage())) {
+                ((android.widget.Button) btn).setText("Tháng " + currentMonth + " " + currentYear);
+            } else {
+                java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("MMMM yyyy", locale);
+                ((android.widget.Button) btn).setText(sdf.format(cal.getTime()));
+            }
+        }
+    }
+
+    private void showMonthYearPickerDialog() {
+        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(requireContext());
+        View view = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_month_year_picker, null);
+        android.widget.NumberPicker monthPicker = view.findViewById(R.id.monthPicker);
+        android.widget.NumberPicker yearPicker = view.findViewById(R.id.yearPicker);
+        java.util.Calendar cal = java.util.Calendar.getInstance();
+        int year = cal.get(java.util.Calendar.YEAR);
+        String[] months = getResources().getStringArray(R.array.months_numbers);
+        monthPicker.setMinValue(0);
+        monthPicker.setMaxValue(11);
+        monthPicker.setDisplayedValues(months);
+        monthPicker.setValue(cal.get(java.util.Calendar.MONTH));
+        yearPicker.setMinValue(year - 5);
+        yearPicker.setMaxValue(year + 1);
+        yearPicker.setValue(year);
+        builder.setView(view);
+        builder.setPositiveButton(getString(R.string.apply_label), (d, which) -> {
+            currentMonth = monthPicker.getValue() + 1;
+            currentYear = yearPicker.getValue();
+            View btnSelectMonth = getView() != null ? getView().findViewById(R.id.btnSelectMonth) : null;
+            if (btnSelectMonth != null) updateSelectMonthButtonText(btnSelectMonth);
+            refreshData();
+        });
+        builder.setNegativeButton(getString(R.string.cancel_label), null);
+        builder.show();
+    }
+
+    private void showCategoryFilterDialog() {
+        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(requireContext());
+        View dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_choose_category, null);
+        RecyclerView rv = dialogView.findViewById(R.id.recyclerViewCategories);
+        Button btnCancel = dialogView.findViewById(R.id.btnCancel);
+        List<Category> cats = new ArrayList<>();
+        Category allCat = new Category();
+        allCat.setId(-1);
+        allCat.setName(getString(R.string.all_categories));
+        cats.add(allCat);
+        cats.addAll(categoryDao.getAllByUser(currentUserId));
+        final android.app.AlertDialog[] dialogPtr = new android.app.AlertDialog[1];
+        com.khanghv.campusexpense.ui.adapters.CategorySelectionAdapter adapter = new com.khanghv.campusexpense.ui.adapters.CategorySelectionAdapter(cats, category -> {
+            selectedCategoryId = category.getId();
+            selectedCategoryName = category.getName();
+            View btnFilterCategory = getView() != null ? getView().findViewById(R.id.btnFilterCategory) : null;
+            if (btnFilterCategory instanceof android.widget.Button) {
+                ((android.widget.Button) btnFilterCategory).setText(selectedCategoryName);
+            }
+            refreshData();
+            if (dialogPtr[0] != null) dialogPtr[0].dismiss();
+        });
+        adapter.setSelectedCategoryId(selectedCategoryId);
+        rv.setLayoutManager(new LinearLayoutManager(requireContext()));
+        rv.setAdapter(adapter);
+        builder.setView(dialogView);
+        dialogPtr[0] = builder.create();
+        btnCancel.setOnClickListener(v -> dialogPtr[0].dismiss());
+        if (dialogPtr[0].getWindow() != null) {
+            dialogPtr[0].getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        }
+        dialogPtr[0].show();
+    }
+
+    private long[] getMonthRange(int year, int month) {
+        java.util.Calendar cal = java.util.Calendar.getInstance();
+        cal.set(java.util.Calendar.YEAR, year);
+        cal.set(java.util.Calendar.MONTH, month - 1);
+        cal.set(java.util.Calendar.DAY_OF_MONTH, 1);
+        cal.set(java.util.Calendar.HOUR_OF_DAY, 0);
+        cal.set(java.util.Calendar.MINUTE, 0);
+        cal.set(java.util.Calendar.SECOND, 0);
+        cal.set(java.util.Calendar.MILLISECOND, 0);
+        long start = cal.getTimeInMillis();
+        cal.add(java.util.Calendar.MONTH, 1);
+        cal.add(java.util.Calendar.MILLISECOND, -1);
+        long end = cal.getTimeInMillis();
+        return new long[]{start, end};
     }
 
     private void showAddPaymentDialog() {
@@ -419,19 +555,23 @@ public class PaymentFragment extends Fragment {
             int minute = p.getTimeMinutes() % 60;
             holder.tvPaymentDateTime.setText(String.format(Locale.getDefault(), "%02d/%02d/%04d • %02d:%02d",
                     cal.get(Calendar.DAY_OF_MONTH), cal.get(Calendar.MONTH) + 1, cal.get(Calendar.YEAR), hour, minute));
-            holder.tvPaymentStatus.setText(p.getStatus());
             long now = System.currentTimeMillis();
             long due = p.getDate() + p.getTimeMinutes() * 60000L;
+            String statusText;
             if ("Paid".equals(p.getStatus())) {
-                holder.tvPaymentStatus.setTextColor(0xFF10B981); // Success Green
-            } else if ("Pending".equals(p.getStatus())) {
-                if (now > due) {
-                    holder.tvPaymentStatus.setTextColor(0xFFEF4444); // Error Red
-                } else {
-                    holder.tvPaymentStatus.setTextColor(0xFFF59E0B); // Warning Amber
-                }
+                statusText = "Paid";
+            } else if ("Pending".equals(p.getStatus()) && (now > due)) {
+                statusText = "Overdue";
             } else {
-                holder.tvPaymentStatus.setTextColor(0xFF757575);
+                statusText = "Pending";
+            }
+            holder.tvPaymentStatus.setText(statusText);
+            if ("Paid".equals(statusText)) {
+                holder.tvPaymentStatus.setTextColor(0xFF10B981); // Success Green
+            } else if ("Overdue".equals(statusText)) {
+                holder.tvPaymentStatus.setTextColor(0xFFEF4444); // Error Red
+            } else {
+                holder.tvPaymentStatus.setTextColor(0xFFF59E0B); // Warning Amber
             }
             String note = p.getNote();
             if (note == null || note.trim().isEmpty()) {
@@ -442,12 +582,19 @@ public class PaymentFragment extends Fragment {
             }
             holder.btnPay.setVisibility("Pending".equals(p.getStatus()) ? View.VISIBLE : View.GONE);
             holder.btnPay.setOnClickListener(v -> {
+                long nowClick = System.currentTimeMillis();
+                long dueClick = p.getDate() + p.getTimeMinutes() * 60000L;
                 Expense e = new Expense(currentUserId, p.getCategoryId(), p.getAmount(), p.getNote(), p.getDate());
                 e.setCreatedAt(System.currentTimeMillis());
                 long expenseId = expenseDao.insert(e);
-                p.setStatus("Paid");
-                p.setLinkedExpenseId((int) expenseId);
-                paymentDao.update(p);
+                if (nowClick > dueClick) {
+                    p.setLinkedExpenseId((int) expenseId);
+                    paymentDao.update(p);
+                } else {
+                    p.setStatus("Paid");
+                    p.setLinkedExpenseId((int) expenseId);
+                    paymentDao.update(p);
+                }
                 if (listener != null) listener.run();
             });
             holder.btnEdit.setOnClickListener(v -> showEditPaymentDialog(p));
@@ -571,8 +718,41 @@ public class PaymentFragment extends Fragment {
             AlertDialog dialog = builder.create();
             Button btnSave = dialogView.findViewById(R.id.btnSave);
             Button btnCancel = dialogView.findViewById(R.id.btnCancel);
+            Button btnClone = dialogView.findViewById(R.id.btnClone);
             
             btnCancel.setOnClickListener(v -> dialog.dismiss());
+            btnClone.setOnClickListener(v -> {
+                try {
+                    String amountStr = etAmount.getText().toString().trim();
+                    if (TextUtils.isEmpty(amountStr)) {
+                        Toast.makeText(requireContext(), getString(R.string.fill_all_fields), Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    double displayAmount = CurrencyManager.parseDisplayAmount(requireContext(), amountStr);
+                    double baseAmount = CurrencyManager.toBaseCurrency(requireContext(), displayAmount);
+                    Payment clone = new Payment();
+                    clone.setUserId(currentUserId);
+                    clone.setCategoryId(spCategory.getSelectedItemPosition() >= 0 && spCategory.getSelectedItemPosition() < categories.size() ? categories.get(spCategory.getSelectedItemPosition()).getId() : p.getCategoryId());
+                    clone.setName(spCategory.getSelectedItemPosition() >= 0 && spCategory.getSelectedItemPosition() < categories.size() ? categories.get(spCategory.getSelectedItemPosition()).getName() : p.getName());
+                    clone.setAmount(baseAmount);
+                    clone.setNote(etNote.getText().toString().trim());
+                    java.util.Calendar nowCal = java.util.Calendar.getInstance();
+                    nowCal.set(java.util.Calendar.HOUR_OF_DAY, 0);
+                    nowCal.set(java.util.Calendar.MINUTE, 0);
+                    nowCal.set(java.util.Calendar.SECOND, 0);
+                    nowCal.set(java.util.Calendar.MILLISECOND, 0);
+                    clone.setDate(nowCal.getTimeInMillis());
+                    clone.setTimeMinutes(selectedTime[0]);
+                    clone.setStatus("Pending");
+                    clone.setCreatedAt(System.currentTimeMillis());
+                    paymentDao.insert(clone);
+                    refreshData();
+                    dialog.dismiss();
+                } catch (Exception e) {
+                    Toast.makeText(requireContext(), getString(R.string.error_cloning_payment_format, e.getMessage()), Toast.LENGTH_SHORT).show();
+                    e.printStackTrace();
+                }
+            });
             btnSave.setOnClickListener(v -> {
                 try {
                     String amountStr = etAmount.getText().toString().trim();
@@ -606,13 +786,13 @@ public class PaymentFragment extends Fragment {
                     refreshData();
                     dialog.dismiss();
                 } catch (Exception e) {
-                    Toast.makeText(requireContext(), "Error saving payment: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(requireContext(), getString(R.string.error_saving_payment_format, e.getMessage()), Toast.LENGTH_SHORT).show();
                     e.printStackTrace();
                 }
             });
             dialog.show();
         } catch (Exception e) {
-            Toast.makeText(requireContext(), "Error opening edit dialog: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(requireContext(), getString(R.string.error_opening_edit_dialog_format, e.getMessage()), Toast.LENGTH_SHORT).show();
             e.printStackTrace();
         }
     }

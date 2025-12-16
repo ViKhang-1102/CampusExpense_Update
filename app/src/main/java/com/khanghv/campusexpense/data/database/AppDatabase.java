@@ -15,9 +15,10 @@ import com.khanghv.campusexpense.data.model.Expense;
 import com.khanghv.campusexpense.data.model.User;
 import com.khanghv.campusexpense.data.model.MonthlyBudget;
 import com.khanghv.campusexpense.data.model.Payment;
+import com.khanghv.campusexpense.data.model.BudgetAdjustment;
 
 
-@Database(entities = {User.class, Category.class, Budget.class, Expense.class, MonthlyBudget.class, Payment.class}, version =6, exportSchema = false)
+@Database(entities = {User.class, Category.class, Budget.class, Expense.class, MonthlyBudget.class, Payment.class, BudgetAdjustment.class}, version =7, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
 private static AppDatabase instance;
 public static final String DATABASE_NAME = "app_database";
@@ -29,6 +30,7 @@ public abstract BudgetDao budgetDao();
 public abstract ExpenseDao expenseDao();
 public abstract MonthlyBudgetDao monthlyBudgetDao();
 public abstract PaymentDao paymentDao();
+public abstract BudgetAdjustmentDao budgetAdjustmentDao();
 
 
 public static synchronized AppDatabase getInstance(Context context){
@@ -65,9 +67,15 @@ public static synchronized AppDatabase getInstance(Context context){
                 db.execSQL("CREATE TABLE IF NOT EXISTS payments (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, userId INTEGER NOT NULL, categoryId INTEGER NOT NULL, name TEXT, amount REAL NOT NULL, note TEXT, date INTEGER NOT NULL, timeMinutes INTEGER NOT NULL, status TEXT, linkedExpenseId INTEGER, createdAt INTEGER NOT NULL)");
             }
         };
+        Migration MIGRATION_6_7 = new Migration(6, 7) {
+            @Override
+            public void migrate(SupportSQLiteDatabase db) {
+                db.execSQL("CREATE TABLE IF NOT EXISTS budget_adjustments (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, userId INTEGER NOT NULL, monthlyBudgetId INTEGER NOT NULL, categoryId INTEGER NOT NULL, month INTEGER NOT NULL, year INTEGER NOT NULL, amount REAL NOT NULL, note TEXT, createdAt INTEGER NOT NULL)");
+            }
+        };
         instance = Room.databaseBuilder(context.getApplicationContext(), AppDatabase.class, DATABASE_NAME)
                 .allowMainThreadQueries()
-                .addMigrations(MIGRATION_4_5, MIGRATION_5_6)
+                .addMigrations(MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7)
                 .build();
     }
     return instance;

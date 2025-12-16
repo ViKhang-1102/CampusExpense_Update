@@ -82,6 +82,30 @@ public class HomeFragment extends Fragment {
         if (btnSelectMonth != null) {
             btnSelectMonth.setOnClickListener(v -> showMonthYearPickerDialog());
         }
+        View btnToggleBreakdown = view.findViewById(R.id.btnToggleBreakdown);
+        if (btnToggleBreakdown != null) {
+            btnToggleBreakdown.setOnClickListener(v -> {
+                SharedPreferences prefs = requireContext().getSharedPreferences(PREFS_HOME, Context.MODE_PRIVATE);
+                boolean show = prefs.getBoolean("show_breakdown", true);
+                prefs.edit().putBoolean("show_breakdown", !show).apply();
+                View card = view.findViewById(R.id.cardBreakdown);
+                if (card != null) card.setVisibility(!show ? View.VISIBLE : View.GONE);
+                if (btnToggleBreakdown instanceof com.google.android.material.button.MaterialButton) {
+                    com.google.android.material.button.MaterialButton mb = (com.google.android.material.button.MaterialButton) btnToggleBreakdown;
+                    mb.setText(getString(R.string.breakdown_title));
+                    mb.setIconResource(show ? R.drawable.ic_expand_more : R.drawable.ic_expand_less);
+                }
+            });
+            SharedPreferences prefs = requireContext().getSharedPreferences(PREFS_HOME, Context.MODE_PRIVATE);
+            boolean show = prefs.getBoolean("show_breakdown", true);
+            View card = view.findViewById(R.id.cardBreakdown);
+            if (card != null) card.setVisibility(show ? View.VISIBLE : View.GONE);
+            if (btnToggleBreakdown instanceof com.google.android.material.button.MaterialButton) {
+                com.google.android.material.button.MaterialButton mb = (com.google.android.material.button.MaterialButton) btnToggleBreakdown;
+                mb.setText(getString(R.string.breakdown_title));
+                mb.setIconResource(show ? R.drawable.ic_expand_less : R.drawable.ic_expand_more);
+            }
+        }
 
         return view;
     }
@@ -202,11 +226,6 @@ public class HomeFragment extends Fragment {
     }
 
     private String getSelectedMonthYear() {
-        SharedPreferences prefs = requireContext().getSharedPreferences(PREFS_HOME, Context.MODE_PRIVATE);
-        String saved = prefs.getString(KEY_MONTH_YEAR, null);
-        if (saved != null && saved.matches("\\d{4}-\\d{2}")) {
-            return saved;
-        }
         return getCurrentMonthYear();
     }
 

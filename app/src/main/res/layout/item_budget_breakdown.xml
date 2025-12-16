@@ -35,6 +35,15 @@
                 android:letterSpacing="0.01" />
 
             <TextView
+                android:id="@+id/tvTrend"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="▲"
+                android:textColor="@color/success"
+                android:textSize="16sp"
+                android:layout_marginEnd="6dp" />
+
+            <TextView
                 android:id="@+id/tvPercentage"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

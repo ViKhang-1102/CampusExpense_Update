@@ -110,7 +110,21 @@
                 android:text="@string/cancel_label"
                 android:textColor="@color/text_primary"
                 style="@style/Widget.MaterialComponents.Button.TextButton"
-                android:layout_marginEnd="8dp"/>
+                android:minHeight="40dp"
+                android:textSize="13sp"
+                android:layout_marginEnd="6dp"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnClone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/clone"
+                android:textColor="@color/white"
+                app:backgroundTint="@color/primary_light"
+                app:cornerRadius="12dp"
+                android:minHeight="40dp"
+                android:textSize="13sp"
+                android:layout_marginEnd="6dp" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnSave"
@@ -119,7 +133,9 @@
                 android:text="@string/save"
                 android:textColor="@color/white"
                 app:backgroundTint="@color/primary"
-                app:cornerRadius="20dp" />
+                app:cornerRadius="12dp"
+                android:minHeight="40dp"
+                android:textSize="13sp" />
         </LinearLayout>
     </LinearLayout>
 </ScrollView>

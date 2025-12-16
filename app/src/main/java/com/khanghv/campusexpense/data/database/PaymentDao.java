@@ -33,4 +33,7 @@ public interface PaymentDao {
 
     @Query("SELECT COUNT(*) FROM payments WHERE userId = :userId AND status = 'Pending' AND (date + timeMinutes*60000) <= :now")
     int getOverdueCount(int userId, long now);
+
+    @Query("DELETE FROM payments WHERE id = :id")
+    void deleteById(int id);
 }

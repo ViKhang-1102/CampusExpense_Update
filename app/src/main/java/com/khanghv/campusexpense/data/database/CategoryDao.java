@@ -26,4 +26,7 @@ public interface CategoryDao {
 
     @Query("SELECT * FROM categories WHERE id = :id LIMIT 1")
     Category getById(int id);
+
+    @Query("DELETE FROM categories WHERE id = :id")
+    void deleteById(int id);
 }

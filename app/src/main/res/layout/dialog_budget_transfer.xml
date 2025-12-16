@@ -7,16 +7,35 @@
     android:padding="24dp">
 
     <TextView
+        android:id="@+id/fromLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/category"
+        android:text="@string/from_label"
         android:textSize="16sp"
         android:textColor="@color/text_primary"
         android:textStyle="bold"
-        android:layout_marginBottom="12dp" />
+        android:layout_marginBottom="8dp" />
+
+    <TextView
+        android:id="@+id/fromCategory"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="16sp"
+        android:textColor="@color/text_secondary"
+        android:layout_marginBottom="16dp" />
+
+    <TextView
+        android:id="@+id/toLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/to_label"
+        android:textSize="16sp"
+        android:textColor="@color/text_primary"
+        android:textStyle="bold"
+        android:layout_marginBottom="8dp" />
 
     <Spinner
-        android:id="@+id/categorySpinner"
+        android:id="@+id/toCategorySpinner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingVertical="12dp"
@@ -33,7 +52,7 @@
         app:boxCornerRadiusTopEnd="16dp"
         app:boxCornerRadiusBottomStart="16dp"
         app:boxCornerRadiusBottomEnd="16dp"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="24dp"
         style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
 
         <com.google.android.material.textfield.TextInputEditText
@@ -45,22 +64,6 @@
 
     </com.google.android.material.textfield.TextInputLayout>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/period"
-        android:textSize="16sp"
-        android:textColor="@color/text_primary"
-        android:textStyle="bold"
-        android:layout_marginBottom="12dp" />
-
-    <Spinner
-        android:id="@+id/periodSpinner"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingVertical="12dp"
-        android:layout_marginBottom="24dp" />
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -71,9 +74,9 @@
             android:id="@+id/cancelButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/cancel"
+            android:text="@string/cancel_label"
             android:textAllCaps="false"
-            android:textColor="@color/text_secondary"
+            android:textColor="@color/text_primary"
             app:backgroundTint="@android:color/transparent"
             android:layout_marginEnd="12dp"
             android:minHeight="48dp"
@@ -85,6 +88,7 @@
             android:layout_height="wrap_content"
             android:text="@string/save"
             android:textAllCaps="false"
+            android:textColor="@color/white"
             app:backgroundTint="@color/primary"
             android:minHeight="48dp"
             app:cornerRadius="12dp" />
