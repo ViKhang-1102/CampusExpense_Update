@@ -93,10 +93,14 @@
     <string name="budget">Ngân sách</string>
     <string name="breakdown_title">Chi tiêu (%)</string>
     <string name="breakdown_value">0% 0₫ 0%</string>
-    <string name="summary_title">Tổng kết tháng</string>
+    <string name="summary_title">Tổng kết</string>
     <string name="total_budget_label">Tổng ngân sách</string>
     <string name="spent_label">Đã chi</string>
     <string name="remaining_label">Còn lại</string>
+    <string name="favorites">Ghi nhớ</string>
+    <string name="favorite">Ghi nhớ</string>
+    <string name="remove_favorite">Xóa ghi nhớ</string>
+    <string name="edit_avatar">Chỉnh sửa avatar</string>
     <string name="change_language">Chuyển đổi ngôn ngữ</string>
     <string name="switch_to_english">Chuyển sang English ($)</string>
     <string name="switch_to_vietnamese">Chuyển sang Tiếng Việt (₫)</string>
@@ -115,6 +119,8 @@
     <string name="switch_to_dark">Chuyển sang Dark Mode</string>
     <string name="switch_to_light">Chuyển sang Light Mode</string>
     <string name="select_month_year">Chọn tháng và năm</string>
+    <string name="select_year">Chọn năm</string>
+    <string name="year_total_spent_title">Tổng chi năm</string>
     <string name="apply_label">Áp dụng</string>
     <string name="cancel_label">Hủy</string>
     <string name="close_label">Đóng</string>

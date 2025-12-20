@@ -80,6 +80,15 @@
                 android:textColor="@color/text_secondary"
                 android:layout_marginTop="6dp" />
 
+            <ImageButton
+                android:id="@+id/favoriteButton"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:layout_marginTop="8dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/favorite"
+                android:src="@drawable/ic_favorite_border"
+                app:tint="@color/text_secondary" />
 
         </LinearLayout>
 

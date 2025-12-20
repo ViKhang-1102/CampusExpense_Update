@@ -251,6 +251,7 @@ public class ExpenseFragment extends Fragment {
                 expense -> showEditDialog(expense),
                 expense -> showDeleteDialog(expense));
         expenseAdapter.setContext(requireContext());
+        expenseAdapter.setCurrentUserId(currentUserId);
     }
 
     private void refreshData() {

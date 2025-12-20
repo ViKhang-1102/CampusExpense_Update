@@ -9,6 +9,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.khanghv.campusexpense.R;
 import com.khanghv.campusexpense.data.model.Expense;
 import com.khanghv.campusexpense.data.model.Category;
+import com.khanghv.campusexpense.data.model.Favorite;
+import com.khanghv.campusexpense.data.database.AppDatabase;
+import com.khanghv.campusexpense.data.database.FavoriteDao;
 import com.khanghv.campusexpense.util.CurrencyManager;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -54,6 +57,8 @@ public class ExpenseRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vi
     }
 
     private android.content.Context context;
+    private int currentUserId = -1;
+    private FavoriteDao favoriteDao;
 
     public ExpenseRecyclerAdapter(List<Expense> expenseList,
                                   List<Category> categoryList,
@@ -67,6 +72,13 @@ public class ExpenseRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vi
 
     public void setContext(android.content.Context context) {
         this.context = context;
+        try {
+            this.favoriteDao = AppDatabase.getInstance(context).favoriteDao();
+        } catch (Exception ignored) {}
+    }
+
+    public void setCurrentUserId(int userId) {
+        this.currentUserId = userId;
     }
 
     private List<ExpenseItem> groupExpensesByDate(List<Expense> expenses) {
@@ -146,6 +158,36 @@ public class ExpenseRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vi
                 expenseHolder.descriptionText.setVisibility(View.GONE);
             }
 
+            boolean fav = false;
+            if (favoriteDao != null && currentUserId != -1) {
+                try {
+                    fav = favoriteDao.isFavorite(currentUserId, expense.getId());
+                } catch (Exception ignored) {}
+            }
+            expenseHolder.favoriteButton.setImageResource(fav ? R.drawable.ic_favorite : R.drawable.ic_favorite_border);
+
+            expenseHolder.favoriteButton.setOnClickListener(v -> {
+                if (favoriteDao == null || currentUserId == -1) return;
+                boolean isFav = false;
+                try {
+                    isFav = favoriteDao.isFavorite(currentUserId, expense.getId());
+                } catch (Exception ignored) {}
+                if (isFav) {
+                    try {
+                        favoriteDao.deleteByUserAndExpense(currentUserId, expense.getId());
+                    } catch (Exception ignored) {}
+                } else {
+                    Favorite f = new Favorite();
+                    f.setUserId(currentUserId);
+                    f.setExpenseId(expense.getId());
+                    f.setCreatedAt(System.currentTimeMillis());
+                    try {
+                        favoriteDao.insert(f);
+                    } catch (Exception ignored) {}
+                }
+                notifyItemChanged(holder.getAdapterPosition());
+            });
+
             expenseHolder.itemView.setOnClickListener(v -> {
                 if (onExpenseClickListener != null) {
                     onExpenseClickListener.onExpenseClick(expense);
@@ -200,6 +242,7 @@ public class ExpenseRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vi
         TextView descriptionText;
         TextView amountText;
         TextView timeText;
+        android.widget.ImageButton favoriteButton;
 
         ExpenseViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -208,6 +251,7 @@ public class ExpenseRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vi
             descriptionText = itemView.findViewById(R.id.descriptionText);
             amountText = itemView.findViewById(R.id.amountText);
             timeText = itemView.findViewById(R.id.timeText);
+            favoriteButton = itemView.findViewById(R.id.favoriteButton);
         }
     }
 }

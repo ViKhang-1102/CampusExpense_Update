@@ -115,6 +115,10 @@
     <string name="total_budget_label">Total Budget</string>
     <string name="spent_label">Spent</string>
     <string name="remaining_label">Remaining</string>
+    <string name="favorites">Saved</string>
+    <string name="favorite">Save</string>
+    <string name="remove_favorite">Remove</string>
+    <string name="edit_avatar">Edit Avatar</string>
 
     <!--Account-->
     <string name="change_language">CHANGE LANGUAGE</string>
@@ -138,6 +142,8 @@
     <string name="toggle_breakdown">Toggle Breakdown</string>
     <string name="change_theme">Change Theme</string>
     <string name="select_month_year">Select Month and Year</string>
+    <string name="select_year">Select Year</string>
+    <string name="year_total_spent_title">Year Total</string>
     <string name="apply_label">Apply</string>
     <string name="cancel_label">Cancel</string>
     <string name="close_label">Close</string>
@@ -177,6 +183,7 @@
     <string name="transfer_done">Transfer completed</string>
     <string name="no_target_budget">No target budget</string>
     <string name="paid_label">Paid</string>
+
     <!-- Common validation/error -->
     <string name="invalid_amount">Invalid amount</string>
     <string name="please_add_categories_first">Please add categories first</string>
