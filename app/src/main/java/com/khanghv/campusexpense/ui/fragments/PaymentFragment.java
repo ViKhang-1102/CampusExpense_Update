@@ -587,23 +587,18 @@ public class PaymentFragment extends Fragment {
                 Expense e = new Expense(currentUserId, p.getCategoryId(), p.getAmount(), p.getNote(), p.getDate());
                 e.setCreatedAt(System.currentTimeMillis());
                 long expenseId = expenseDao.insert(e);
-                if (nowClick > dueClick) {
-                    p.setLinkedExpenseId((int) expenseId);
-                    paymentDao.update(p);
-                } else {
-                    p.setStatus("Paid");
-                    p.setLinkedExpenseId((int) expenseId);
-                    paymentDao.update(p);
-                }
+                p.setStatus("Paid");
+                p.setLinkedExpenseId((int) expenseId);
+                paymentDao.update(p);
                 if (listener != null) listener.run();
             });
             holder.btnEdit.setOnClickListener(v -> showEditPaymentDialog(p));
             holder.btnDelete.setOnClickListener(v -> {
                 if (p.getLinkedExpenseId() != null) {
                     Expense linked = expenseDao.getExpenseById(p.getLinkedExpenseId());
-                    if (linked != null) expenseDao.delete(linked);
+                    if (linked != null) expenseDao.deleteById(linked.getId());
                 }
-                paymentDao.delete(p);
+                paymentDao.deleteById(p.getId());
                 if (listener != null) listener.run();
             });
         }
@@ -737,12 +732,9 @@ public class PaymentFragment extends Fragment {
                     clone.setAmount(baseAmount);
                     clone.setNote(etNote.getText().toString().trim());
                     java.util.Calendar nowCal = java.util.Calendar.getInstance();
-                    nowCal.set(java.util.Calendar.HOUR_OF_DAY, 0);
-                    nowCal.set(java.util.Calendar.MINUTE, 0);
-                    nowCal.set(java.util.Calendar.SECOND, 0);
-                    nowCal.set(java.util.Calendar.MILLISECOND, 0);
                     clone.setDate(nowCal.getTimeInMillis());
-                    clone.setTimeMinutes(selectedTime[0]);
+                    int currentMinutes = nowCal.get(java.util.Calendar.HOUR_OF_DAY) * 60 + nowCal.get(java.util.Calendar.MINUTE);
+                    clone.setTimeMinutes(currentMinutes);
                     clone.setStatus("Pending");
                     clone.setCreatedAt(System.currentTimeMillis());
                     paymentDao.insert(clone);

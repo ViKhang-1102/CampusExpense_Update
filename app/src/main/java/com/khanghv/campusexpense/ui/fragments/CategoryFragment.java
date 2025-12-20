@@ -24,6 +24,7 @@ import com.khanghv.campusexpense.ui.category.CategoryRecyclerAdapter;
 import com.khanghv.campusexpense.data.database.CategoryDao;
 import com.khanghv.campusexpense.data.database.ExpenseDao;
 import com.khanghv.campusexpense.data.database.BudgetDao;
+import com.khanghv.campusexpense.data.database.PaymentDao;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +38,7 @@ public class CategoryFragment extends Fragment {
     private ExpenseDao expenseDao;
     private BudgetDao budgetDao;
     private com.khanghv.campusexpense.data.database.MonthlyBudgetDao monthlyBudgetDao;
+    private PaymentDao paymentDao;
     private TextView emptyView;
     private android.content.SharedPreferences sharedPreferences;
     private int currentUserId;
@@ -54,6 +56,7 @@ public class CategoryFragment extends Fragment {
         expenseDao = db.expenseDao();
         budgetDao = db.budgetDao();
         monthlyBudgetDao = db.monthlyBudgetDao();
+        paymentDao = db.paymentDao();
         sharedPreferences = requireContext().getSharedPreferences("user_prefs", android.content.Context.MODE_PRIVATE);
         currentUserId = sharedPreferences.getInt("userId", -1);
 
@@ -121,6 +124,7 @@ public class CategoryFragment extends Fragment {
                     expenseDao.deleteExpensesByCategoryId(category.getId());
                     budgetDao.deleteBudgetsByCategoryId(category.getId());
                     if (monthlyBudgetDao != null) monthlyBudgetDao.deleteBudgetsByCategoryId(category.getId());
+                    paymentDao.deleteByCategoryId(category.getId());
                     // Sau đó mới xóa category
                     categoryDao.delete(category);
                     refreshList();

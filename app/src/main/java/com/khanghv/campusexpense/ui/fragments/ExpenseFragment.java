@@ -24,6 +24,7 @@ import com.khanghv.campusexpense.data.database.AppDatabase;
 import com.khanghv.campusexpense.data.database.BudgetDao;
 import com.khanghv.campusexpense.data.database.CategoryDao;
 import com.khanghv.campusexpense.data.database.ExpenseDao;
+import com.khanghv.campusexpense.data.database.PaymentDao;
 import com.khanghv.campusexpense.data.model.Budget;
 import com.khanghv.campusexpense.data.model.Category;
 import com.khanghv.campusexpense.data.model.Expense;
@@ -54,6 +55,7 @@ public class ExpenseFragment extends Fragment {
     private ExpenseDao expenseDao;
     private CategoryDao categoryDao;
     private BudgetDao budgetDao;
+    private PaymentDao paymentDao;
     private SharedPreferences sharedPreferences;
     private int currentUserId;
 
@@ -97,6 +99,7 @@ public class ExpenseFragment extends Fragment {
         expenseDao = database.expenseDao();
         categoryDao = database.categoryDao();
         budgetDao = database.budgetDao();
+        paymentDao = database.paymentDao();
 
         categoryList = new ArrayList<>();
         categoryExpenseList = new ArrayList<>();
@@ -629,6 +632,7 @@ public class ExpenseFragment extends Fragment {
                             }
                         } catch (Exception ignored) {}
                     }
+                    paymentDao.deleteByLinkedExpenseId(expense.getId());
                     expenseDao.delete(expense);
                     refreshData();
                     Toast.makeText(requireContext(), R.string.expense_deleted, Toast.LENGTH_SHORT).show();

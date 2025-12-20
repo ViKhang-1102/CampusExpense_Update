@@ -85,8 +85,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center_vertical"
-            android:layout_marginBottom="8dp"
-            android:visibility="gone">
+            android:layout_marginBottom="8dp">
 
 
             <TextView
@@ -101,9 +100,8 @@
                 android:id="@+id/budgetAmountText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="14sp"
+                android:textSize="16sp"
                 android:textColor="@color/color_dark_text" />
-
 
         </LinearLayout>
 
@@ -119,14 +117,36 @@
             android:progressBackgroundTint="@color/divider"
             android:layout_marginTop="8dp" />
 
-        <TextView
-            android:id="@+id/progressText"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="end"
-            android:layout_marginTop="6dp"
-            android:textSize="13sp"
-            android:textColor="@color/text_secondary" />
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginTop="6dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/remaining_label"
+                android:textSize="13sp"
+                android:textColor="@color/text_secondary" />
+
+            <TextView
+                android:id="@+id/remainAmountText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="6dp"
+                android:textSize="13sp"
+                android:textColor="@color/color_dark_text" />
+
+            <TextView
+                android:id="@+id/progressText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="13sp"
+                android:textColor="@color/text_secondary" />
+        </LinearLayout>
 
 
     </LinearLayout>

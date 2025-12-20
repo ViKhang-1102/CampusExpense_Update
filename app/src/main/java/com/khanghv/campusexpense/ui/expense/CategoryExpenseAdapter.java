@@ -67,6 +67,9 @@ public class CategoryExpenseAdapter extends RecyclerView.Adapter<CategoryExpense
         if (item.budget != null) {
             holder.budgetLayout.setVisibility(View.VISIBLE);
             holder.budgetAmountText.setText(CurrencyManager.formatDisplayCurrency(holderContext, item.budget.getAmount()));
+            double remain = item.budget.getAmount() - item.totalExpense;
+            holder.remainAmountText.setText(CurrencyManager.formatDisplayCurrency(holderContext, remain));
+            holder.remainAmountText.setTextColor(remain < 0 ? 0xFFD32F2F : 0xFF4CAF50);
 
             double percentage = (item.totalExpense / item.budget.getAmount()) * 100;
             int progress = (int) Math.min(Math.max(percentage, 0), 100);
@@ -83,7 +86,10 @@ public class CategoryExpenseAdapter extends RecyclerView.Adapter<CategoryExpense
                 holder.progressText.setTextColor(0xFF757575);
             }
         } else {
-            holder.budgetLayout.setVisibility(View.GONE);
+            holder.budgetLayout.setVisibility(View.VISIBLE);
+            holder.budgetAmountText.setText("—");
+            holder.remainAmountText.setText("—");
+            holder.remainAmountText.setTextColor(0xFF757575);
             holder.progressBar.setProgress(0);
             holder.progressText.setText("");
         }
@@ -106,6 +112,7 @@ public class CategoryExpenseAdapter extends RecyclerView.Adapter<CategoryExpense
         TextView expenseCountText;
         LinearLayout budgetLayout;
         TextView budgetAmountText;
+        TextView remainAmountText;
         ProgressBar progressBar;
         TextView progressText;
 
@@ -116,6 +123,7 @@ public class CategoryExpenseAdapter extends RecyclerView.Adapter<CategoryExpense
             expenseCountText = itemView.findViewById(R.id.expenseCountText);
             budgetLayout = itemView.findViewById(R.id.budgetLayout);
             budgetAmountText = itemView.findViewById(R.id.budgetAmountText);
+            remainAmountText = itemView.findViewById(R.id.remainAmountText);
             progressBar = itemView.findViewById(R.id.progressBar);
             progressText = itemView.findViewById(R.id.progressText);
         }

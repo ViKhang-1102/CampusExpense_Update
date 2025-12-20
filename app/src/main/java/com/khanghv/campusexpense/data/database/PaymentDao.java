@@ -36,4 +36,13 @@ public interface PaymentDao {
 
     @Query("DELETE FROM payments WHERE id = :id")
     void deleteById(int id);
+    
+    @Query("DELETE FROM payments WHERE categoryId = :categoryId")
+    void deleteByCategoryId(int categoryId);
+    
+    @Query("SELECT * FROM payments WHERE linkedExpenseId = :expenseId LIMIT 1")
+    Payment getByLinkedExpenseId(int expenseId);
+    
+    @Query("DELETE FROM payments WHERE linkedExpenseId = :expenseId")
+    void deleteByLinkedExpenseId(int expenseId);
 }

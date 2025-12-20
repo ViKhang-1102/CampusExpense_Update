@@ -800,8 +800,14 @@ public class BudgetFragment extends Fragment {
             int categoryPosition = categorySpinner.getSelectedItemPosition();
             String amountStr = amountInput.getText().toString().trim();
             int periodPosition = periodSpinner.getSelectedItemPosition();
-            double displayAmount = CurrencyManager.parseDisplayAmount(requireContext(), amountStr);
-            double amount = CurrencyManager.toBaseCurrency(requireContext(), displayAmount);
+            double amount;
+            if (TextUtils.isEmpty(amountStr)) {
+                amount = 0.0;
+            } else {
+                double displayAmount = CurrencyManager.parseDisplayAmount(requireContext(), amountStr);
+                amount = CurrencyManager.toBaseCurrency(requireContext(), displayAmount);
+                if (amount < 0) amount = 0.0;
+            }
             Category selectedCategory = categoryList.get(categoryPosition);
             // For monthly budgets, ensure uniqueness per month/year
             com.khanghv.campusexpense.data.model.MonthlyBudget existingMb = monthlyBudgetDao.getBudgetByCategoryUserMonth(currentUserId, selectedCategory.getId(), currentMonth, currentYear);
