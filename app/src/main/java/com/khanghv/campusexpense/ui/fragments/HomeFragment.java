@@ -226,7 +226,14 @@ public class HomeFragment extends Fragment {
     }
 
     private String getSelectedMonthYear() {
-        return getCurrentMonthYear();
+        SharedPreferences prefs = requireContext().getSharedPreferences(PREFS_HOME, Context.MODE_PRIVATE);
+        String saved = prefs.getString(KEY_MONTH_YEAR, null);
+        if (saved != null && saved.matches("\\d{4}-\\d{2}")) {
+            return saved;
+        }
+        String current = getCurrentMonthYear();
+        prefs.edit().putString(KEY_MONTH_YEAR, current).apply();
+        return current;
     }
 
     private int getDaysInMonth(String monthYear) {
