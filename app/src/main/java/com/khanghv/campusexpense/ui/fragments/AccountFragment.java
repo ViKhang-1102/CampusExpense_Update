@@ -97,25 +97,7 @@ public class AccountFragment extends Fragment {
         welcomeText.setText(R.string.welcome);
         usernameText.setText(username);
 
-        if (!username.isEmpty()) {
-            char firstLetter = username.charAt(0);
-            avatarText.setText(String.valueOf(firstLetter));
-        }
-        String avatarUriStr = sharedPreferences.getString("avatar_uri", null);
-        if (avatarUriStr != null) {
-            Uri uri = Uri.parse(avatarUriStr);
-            try {
-                avatarImage.setImageURI(uri);
-                avatarImage.setVisibility(View.VISIBLE);
-                avatarText.setVisibility(View.GONE);
-            } catch (Exception e) {
-                avatarImage.setVisibility(View.GONE);
-                avatarText.setVisibility(View.VISIBLE);
-            }
-        } else {
-            avatarImage.setVisibility(View.GONE);
-            avatarText.setVisibility(View.VISIBLE);
-        }
+        refreshAvatar();
         btnEditAvatar.setOnClickListener(v -> openImagePicker());
 
         categoryButton.setOnClickListener(v -> {
@@ -133,6 +115,12 @@ public class AccountFragment extends Fragment {
         setupFavoritesSection();
         setupYearSummarySection();
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        refreshAvatar();
     }
 
     private void logout() {
@@ -205,13 +193,42 @@ public class AccountFragment extends Fragment {
                 requireContext().getContentResolver().takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
             } catch (Exception ignored) {}
             sharedPreferences.edit().putString("avatar_uri", uri.toString()).apply();
-            View view = getView();
-            if (view != null) {
+            refreshAvatar();
+        }
+    }
+    
+    private void refreshAvatar() {
+        if (!isAdded()) return;
+        String username = sharedPreferences.getString("username", "");
+        char firstLetter = getUserInitial(username);
+        avatarText.setText(String.valueOf(firstLetter));
+        avatarText.setAlpha(1f);
+        String avatarUriStr = sharedPreferences.getString("avatar_uri", null);
+        if (avatarUriStr != null) {
+            try {
+                Uri uri = Uri.parse(avatarUriStr);
                 avatarImage.setImageURI(uri);
                 avatarImage.setVisibility(View.VISIBLE);
                 avatarText.setVisibility(View.GONE);
+            } catch (Exception e) {
+                avatarImage.setImageDrawable(null);
+                avatarImage.setVisibility(View.GONE);
+                avatarText.setVisibility(View.VISIBLE);
+                avatarText.setText(String.valueOf(firstLetter));
             }
+        } else {
+            avatarImage.setImageDrawable(null);
+            avatarImage.setVisibility(View.GONE);
+            avatarText.setVisibility(View.VISIBLE);
+            avatarText.setText(String.valueOf(firstLetter));
         }
+    }
+    
+    private char getUserInitial(String username) {
+        if (username == null) return 'U';
+        String trimmed = username.trim();
+        if (trimmed.isEmpty()) return 'U';
+        return Character.toUpperCase(trimmed.charAt(0));
     }
 
     private void setupFavoritesSection() {
