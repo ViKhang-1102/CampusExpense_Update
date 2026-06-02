@@ -12,6 +12,7 @@ import com.khanghv.campusexpense.data.database.CategoryDao;
 import com.khanghv.campusexpense.data.database.ExpenseDao;
 import com.khanghv.campusexpense.data.database.UserDao;
 import com.khanghv.campusexpense.data.model.Budget;
+import com.khanghv.campusexpense.data.model.CategorySpendingStat;
 import com.khanghv.campusexpense.data.model.Category;
 import com.khanghv.campusexpense.data.model.User;
 import com.khanghv.campusexpense.data.model.Expense;  // Adjust package nếu cần
@@ -225,35 +226,43 @@ public class ExpenseRepository {
 
     // Ensure budgets exist for given month: if missing, create from previous month by carrying over remaining
     public void ensureBudgetsForMonth(String monthYear, int userId) {
-        new Thread(() -> {
-            String[] parts = monthYear.split("-");
-            int year = Integer.parseInt(parts[0]);
-            int month = Integer.parseInt(parts[1]);
+        new Thread(() -> ensureBudgetsForMonthBlocking(monthYear, userId)).start();
+    }
 
-            int prevMonth = month - 1;
-            int prevYear = year;
-            if (prevMonth <= 0) { prevMonth = 12; prevYear = year - 1; }
+    public void ensureBudgetsForMonthBlocking(String monthYear, int userId) {
+        String[] parts = monthYear.split("-");
+        int year = Integer.parseInt(parts[0]);
+        int month = Integer.parseInt(parts[1]);
 
-            if (monthlyBudgetDao == null) return;
-            com.khanghv.campusexpense.data.database.MonthlyBudgetDao mbDao = monthlyBudgetDao;
-            java.util.List<Category> categories = categoryDao.getAllByUser(userId);
+        int prevMonth = month - 1;
+        int prevYear = year;
+        if (prevMonth <= 0) { prevMonth = 12; prevYear = year - 1; }
 
-            long[] prevRange = getMonthDateRange(String.format(Locale.getDefault(), "%04d-%02d", prevYear, prevMonth));
+        if (monthlyBudgetDao == null) return;
+        com.khanghv.campusexpense.data.database.MonthlyBudgetDao mbDao = monthlyBudgetDao;
+        java.util.List<Category> categories = categoryDao.getAllByUser(userId);
 
-            for (Category cat : categories) {
-                com.khanghv.campusexpense.data.model.MonthlyBudget existing = mbDao.getBudgetByCategoryUserMonth(userId, cat.getId(), month, year);
-                if (existing != null) continue;
+        long[] prevRange = getMonthDateRange(String.format(Locale.getDefault(), "%04d-%02d", prevYear, prevMonth));
 
-                com.khanghv.campusexpense.data.model.MonthlyBudget prev = mbDao.getBudgetByCategoryUserMonth(userId, cat.getId(), prevMonth, prevYear);
-                if (prev == null) continue;
+        for (Category cat : categories) {
+            com.khanghv.campusexpense.data.model.MonthlyBudget existing = mbDao.getBudgetByCategoryUserMonth(userId, cat.getId(), month, year);
+            if (existing != null) continue;
 
-                Double spentPrev = expenseDao.getTotalExpensesByCategoryAndDateRange(userId, cat.getId(), prevRange[0], prevRange[1]);
-                double spent = spentPrev != null ? spentPrev : 0.0;
-                double newTotal = prev.getTotalBudget() - spent;
-                if (newTotal < 0) newTotal = 0.0;
-                com.khanghv.campusexpense.data.model.MonthlyBudget newBud = new com.khanghv.campusexpense.data.model.MonthlyBudget(userId, cat.getId(), month, year, newTotal, newTotal);
-                mbDao.insert(newBud);
-            }
-        }).start();
+            com.khanghv.campusexpense.data.model.MonthlyBudget prev = mbDao.getBudgetByCategoryUserMonth(userId, cat.getId(), prevMonth, prevYear);
+            if (prev == null) continue;
+
+            Double spentPrev = expenseDao.getTotalExpensesByCategoryAndDateRange(userId, cat.getId(), prevRange[0], prevRange[1]);
+            double spent = spentPrev != null ? spentPrev : 0.0;
+            double carriedRemaining = prev.getTotalBudget() - spent;
+            if (carriedRemaining < 0) carriedRemaining = 0.0;
+            com.khanghv.campusexpense.data.model.MonthlyBudget newBud = new com.khanghv.campusexpense.data.model.MonthlyBudget(
+                    userId, cat.getId(), month, year, carriedRemaining, carriedRemaining
+            );
+            mbDao.insert(newBud);
+        }
+    }
+
+    public List<CategorySpendingStat> getSpendingStatsByRange(int userId, long startDate, long endDate) {
+        return expenseDao.getSpendingStatsByDateRange(userId, startDate, endDate);
     }
 }

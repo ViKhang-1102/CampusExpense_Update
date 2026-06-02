@@ -93,6 +93,7 @@ public class BudgetFragment extends Fragment {
         currentMonth = cal.get(java.util.Calendar.MONTH) + 1; // 1-12
         currentYear = cal.get(java.util.Calendar.YEAR);
         selectedCategoryName = getString(R.string.all_categories);
+        repository.ensureBudgetsForMonthBlocking(String.format(java.util.Locale.getDefault(), "%04d-%02d", currentYear, currentMonth), currentUserId);
         refreshBudgetList();
         return view;
     }
@@ -657,7 +658,7 @@ public class BudgetFragment extends Fragment {
             currentMonth = monthPicker.getValue() + 1;
             currentYear = yearPicker.getValue();
             // ensure budgets exist for this month by carrying over previous month
-            repository.ensureBudgetsForMonth(String.format(java.util.Locale.getDefault(), "%04d-%02d", currentYear, currentMonth), currentUserId);
+            repository.ensureBudgetsForMonthBlocking(String.format(java.util.Locale.getDefault(), "%04d-%02d", currentYear, currentMonth), currentUserId);
             refreshBudgetList();
         });
         builder.setNegativeButton(getString(R.string.cancel_label), null);

@@ -23,6 +23,7 @@ import com.khanghv.campusexpense.data.database.AppDatabase;
 import com.khanghv.campusexpense.data.database.CategoryDao;
 import com.khanghv.campusexpense.data.model.Category;
 import com.khanghv.campusexpense.data.model.User;
+import com.khanghv.campusexpense.ui.analytics.ExpenseAnalyticsActivity;
 import com.khanghv.campusexpense.ui.home.BudgetBreakdownAdapter;
 import com.khanghv.campusexpense.util.CurrencyManager;
 
@@ -106,6 +107,11 @@ public class HomeFragment extends Fragment {
                 mb.setIconResource(show ? R.drawable.ic_expand_less : R.drawable.ic_expand_more);
             }
         }
+        View btnOpenAnalytics = view.findViewById(R.id.btnOpenAnalytics);
+        if (btnOpenAnalytics != null) {
+            btnOpenAnalytics.setOnClickListener(v ->
+                    startActivity(new android.content.Intent(requireContext(), ExpenseAnalyticsActivity.class)));
+        }
 
         return view;
     }
@@ -158,6 +164,7 @@ public class HomeFragment extends Fragment {
 
 
     private void loadDataForMonth(String monthYear, int userId) {
+        repository.ensureBudgetsForMonthBlocking(monthYear, userId);
         final Double[] totalSpentValue = {0.0};
         final Double[] budgetValue = {0.0};
 

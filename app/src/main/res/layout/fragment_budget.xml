@@ -32,28 +32,29 @@
                 android:orientation="horizontal"
                 android:layout_marginBottom="12dp">
 
+<!--                <com.google.android.material.button.MaterialButton-->
+<!--                    android:id="@+id/btnFilterCategory"-->
+<!--                    style="@style/Widget.MaterialComponents.Button.TextButton"-->
+<!--                    android:layout_width="0dp"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_weight="1"-->
+<!--                    android:gravity="left"-->
+<!--                    android:textSize="14sp"-->
+<!--                    android:paddingStart="16dp"-->
+<!--                    android:paddingEnd="16dp"-->
+<!--                    android:text="@string/all_categories"/>-->
+
                 <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnFilterCategory"
+                    android:id="@+id/btnSelectMonth"
                     style="@style/Widget.MaterialComponents.Button.TextButton"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:gravity="left"
-                    android:textSize="14sp"
+                    android:gravity="right"
                     android:paddingStart="16dp"
                     android:paddingEnd="16dp"
-                    android:text="@string/all_categories"/>
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnSelectMonth"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
                     android:text="@string/select_month"
-                    android:textSize="14sp"
-                    android:paddingStart="16dp"
-                    android:paddingEnd="16dp"
-                    style="@style/Widget.MaterialComponents.Button.TextButton"/>
+                    android:textSize="14sp" />
             </LinearLayout>
 
             <TextView

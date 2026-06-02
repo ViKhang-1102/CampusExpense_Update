@@ -6,6 +6,7 @@ import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
 import androidx.room.Update;
+import com.khanghv.campusexpense.data.model.CategorySpendingStat;
 import com.khanghv.campusexpense.data.model.Expense;
 import java.util.List;
 
@@ -44,6 +45,12 @@ public interface ExpenseDao {
 
     @Query("SELECT SUM(amount) FROM expenses WHERE userId = :userId AND categoryId = :categoryId AND date >= :startDate AND date <= :endDate")
     Double getTotalExpensesByCategoryAndDateRange(int userId, int categoryId, long startDate, long endDate);
+
+    @Query("SELECT e.categoryId AS categoryId, c.name AS categoryName, SUM(e.amount) AS totalSpent " +
+            "FROM expenses e INNER JOIN categories c ON e.categoryId = c.id " +
+            "WHERE e.userId = :userId AND e.date >= :startDate AND e.date <= :endDate " +
+            "GROUP BY e.categoryId, c.name ORDER BY totalSpent DESC")
+    List<CategorySpendingStat> getSpendingStatsByDateRange(int userId, long startDate, long endDate);
 
     @Query("SELECT * FROM expenses WHERE id = :id")
     Expense getExpenseById(int id);

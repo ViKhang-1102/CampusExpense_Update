@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingStart="6dp"
+    android:paddingTop="8dp"
+    android:paddingEnd="6dp"
+    android:paddingBottom="4dp">
+
+    <TextView
+        android:id="@+id/tvGoalDialogSubtitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/analytics_goal_dialog_subtitle"
+        android:textColor="@color/text_secondary"
+        android:textSize="13sp"
+        android:lineSpacingExtra="2dp" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="420dp"
+        android:layout_marginTop="10dp"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:id="@+id/layoutGoalInputs"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="8dp" />
+    </ScrollView>
+</LinearLayout>
