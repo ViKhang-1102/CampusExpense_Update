@@ -683,7 +683,8 @@ public class BudgetFragment extends Fragment {
             b.setId(mb.getId());
             b.setUserId(mb.getUserId());
             b.setCategoryId(mb.getCategoryId());
-            b.setAmount(mb.getTotalBudget());
+            // display remaining budget (can be negative when overspent)
+            b.setAmount(mb.getRemainingBudget());
             b.setPeriod("Monthly");
             b.setCreatedAt(mb.getCreatedAt());
             budgetList.add(b);

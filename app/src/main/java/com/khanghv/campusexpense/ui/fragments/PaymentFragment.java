@@ -586,6 +586,23 @@ public class PaymentFragment extends Fragment {
                 long dueClick = p.getDate() + p.getTimeMinutes() * 60000L;
                 Expense e = new Expense(currentUserId, p.getCategoryId(), p.getAmount(), p.getNote(), p.getDate());
                 e.setCreatedAt(System.currentTimeMillis());
+                // Link to monthly budget if exists for the payment's month/year and adjust remaining
+                try {
+                    java.util.Calendar calForExp = java.util.Calendar.getInstance();
+                    calForExp.setTimeInMillis(p.getDate());
+                    int expMonth = calForExp.get(java.util.Calendar.MONTH) + 1;
+                    int expYear = calForExp.get(java.util.Calendar.YEAR);
+                    com.khanghv.campusexpense.data.database.MonthlyBudgetDao mbDao = AppDatabase.getInstance(requireContext()).monthlyBudgetDao();
+                    com.khanghv.campusexpense.data.model.MonthlyBudget mb = mbDao.getBudgetByCategoryUserMonth(currentUserId, p.getCategoryId(), expMonth, expYear);
+                    if (mb != null) {
+                        e.setBudgetId(mb.getId());
+                        double newRemaining = mb.getRemainingBudget() - p.getAmount();
+                        // allow negative remaining (overspent)
+                        mb.setRemainingBudget(newRemaining);
+                        mbDao.update(mb);
+                    }
+                } catch (Exception ignored) {}
+
                 long expenseId = expenseDao.insert(e);
                 p.setStatus("Paid");
                 p.setLinkedExpenseId((int) expenseId);
@@ -596,7 +613,22 @@ public class PaymentFragment extends Fragment {
             holder.btnDelete.setOnClickListener(v -> {
                 if (p.getLinkedExpenseId() != null) {
                     Expense linked = expenseDao.getExpenseById(p.getLinkedExpenseId());
-                    if (linked != null) expenseDao.deleteById(linked.getId());
+                    if (linked != null) {
+                        // restore monthly budget remaining if linked
+                        try {
+                            Integer linkedBudgetId = linked.getBudgetId();
+                            if (linkedBudgetId != null) {
+                                com.khanghv.campusexpense.data.database.MonthlyBudgetDao mbDao = AppDatabase.getInstance(requireContext()).monthlyBudgetDao();
+                                com.khanghv.campusexpense.data.model.MonthlyBudget mb = mbDao.getById(linkedBudgetId);
+                                if (mb != null) {
+                                    double newRemaining = mb.getRemainingBudget() + linked.getAmount();
+                                    mb.setRemainingBudget(newRemaining);
+                                    mbDao.update(mb);
+                                }
+                            }
+                        } catch (Exception ignored) {}
+                        expenseDao.deleteById(linked.getId());
+                    }
                 }
                 paymentDao.deleteById(p.getId());
                 if (listener != null) listener.run();
@@ -768,6 +800,61 @@ public class PaymentFragment extends Fragment {
                     if (p.getLinkedExpenseId() != null) {
                         Expense linked = expenseDao.getExpenseById(p.getLinkedExpenseId());
                         if (linked != null) {
+                            double oldAmount = linked.getAmount();
+                            int oldCategory = linked.getCategoryId();
+                            long oldDate = linked.getDate();
+                            Integer oldBudgetId = linked.getBudgetId();
+
+                            // compute new month/year
+                            java.util.Calendar calNew = java.util.Calendar.getInstance();
+                            calNew.setTimeInMillis(p.getDate());
+                            int newMonth = calNew.get(java.util.Calendar.MONTH) + 1;
+                            int newYear = calNew.get(java.util.Calendar.YEAR);
+
+                            // compute old month/year
+                            java.util.Calendar calOld = java.util.Calendar.getInstance();
+                            calOld.setTimeInMillis(oldDate);
+                            int oldMonth = calOld.get(java.util.Calendar.MONTH) + 1;
+                            int oldYear = calOld.get(java.util.Calendar.YEAR);
+
+                            try {
+                                com.khanghv.campusexpense.data.database.MonthlyBudgetDao mbDao = AppDatabase.getInstance(requireContext()).monthlyBudgetDao();
+
+                                // if category/month changed, revert old monthly budget
+                                if (oldBudgetId != null && (oldCategory != p.getCategoryId() || oldMonth != newMonth || oldYear != newYear)) {
+                                    com.khanghv.campusexpense.data.model.MonthlyBudget oldMb = mbDao.getById(oldBudgetId);
+                                    if (oldMb != null) {
+                                        oldMb.setRemainingBudget(oldMb.getRemainingBudget() + oldAmount);
+                                        mbDao.update(oldMb);
+                                    }
+                                }
+
+                                // try to find monthly budget for new category/month
+                                com.khanghv.campusexpense.data.model.MonthlyBudget newMb = mbDao.getBudgetByCategoryUserMonth(currentUserId, p.getCategoryId(), newMonth, newYear);
+                                if (newMb != null) {
+                                    double newRemaining = newMb.getRemainingBudget() - p.getAmount();
+                                    if (newRemaining < 0) newRemaining = 0;
+                                    newMb.setRemainingBudget(newRemaining);
+                                    mbDao.update(newMb);
+                                    linked.setBudgetId(newMb.getId());
+                                } else if (oldBudgetId != null && oldCategory == p.getCategoryId() && oldMonth == newMonth && oldYear == newYear) {
+                                    // same budget context, adjust by delta
+                                    com.khanghv.campusexpense.data.model.MonthlyBudget oldMb2 = mbDao.getById(oldBudgetId);
+                                    if (oldMb2 != null) {
+                                        double adjusted = oldMb2.getRemainingBudget() + oldAmount - p.getAmount();
+                                        if (adjusted < 0) adjusted = 0;
+                                        oldMb2.setRemainingBudget(adjusted);
+                                        mbDao.update(oldMb2);
+                                        linked.setBudgetId(oldMb2.getId());
+                                    } else {
+                                        linked.setBudgetId(null);
+                                    }
+                                } else {
+                                    // no monthly budget for new period
+                                    linked.setBudgetId(null);
+                                }
+                            } catch (Exception ignored) {}
+
                             linked.setAmount(p.getAmount());
                             linked.setCategoryId(p.getCategoryId());
                             linked.setDescription(p.getNote());

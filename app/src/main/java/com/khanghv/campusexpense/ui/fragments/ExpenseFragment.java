@@ -471,16 +471,16 @@ public class ExpenseFragment extends Fragment {
             calForExp.setTimeInMillis(selectedDate[0]);
             int expMonth = calForExp.get(Calendar.MONTH) + 1;
             int expYear = calForExp.get(Calendar.YEAR);
-            try {
-                com.khanghv.campusexpense.data.model.MonthlyBudget mb = AppDatabase.getInstance(requireContext()).monthlyBudgetDao().getBudgetByCategoryUserMonth(currentUserId, selectedCategory.getId(), expMonth, expYear);
-                if (mb != null) {
-                    expense.setBudgetId(mb.getId());
-                    double newRemaining = mb.getRemainingBudget() - amount;
-                    if (newRemaining < 0) newRemaining = 0;
-                    mb.setRemainingBudget(newRemaining);
-                    AppDatabase.getInstance(requireContext()).monthlyBudgetDao().update(mb);
-                }
-            } catch (Exception ignored) {}
+                try {
+                    com.khanghv.campusexpense.data.model.MonthlyBudget mb = AppDatabase.getInstance(requireContext()).monthlyBudgetDao().getBudgetByCategoryUserMonth(currentUserId, selectedCategory.getId(), expMonth, expYear);
+                    if (mb != null) {
+                        expense.setBudgetId(mb.getId());
+                        double newRemaining = mb.getRemainingBudget() - amount;
+                        // allow negative remaining (overspent)
+                        mb.setRemainingBudget(newRemaining);
+                        AppDatabase.getInstance(requireContext()).monthlyBudgetDao().update(mb);
+                    }
+                } catch (Exception ignored) {}
 
             expenseDao.insert(expense);
 
@@ -597,7 +597,7 @@ public class ExpenseFragment extends Fragment {
                         double remaining = mb.getRemainingBudget();
                         // revert old amount then deduct new amount: remaining += oldAmount - amount
                         double newRemaining = remaining + oldAmount - amount;
-                        if (newRemaining < 0) newRemaining = 0;
+                        // allow negative remaining (overspent)
                         mb.setRemainingBudget(newRemaining);
                         AppDatabase.getInstance(requireContext()).monthlyBudgetDao().update(mb);
                     }
